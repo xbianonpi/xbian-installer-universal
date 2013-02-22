@@ -1,8 +1,9 @@
-//#ifdef Q_WS_MAC
 #include "mac_functions.h"
 #include <iostream>
 #include "sstream"
 #include "stdio.h"
+
+int processID;
 
 mac_functions::mac_functions()
 {
@@ -41,6 +42,7 @@ vector<mac_disk> mac_functions::mac_GetDisks()
         buffer << path2 << endl;
         long sizeInMB = (atol(buffer.str().c_str()) / 1024);
         diskSizeInMB.push_back(sizeInMB);
+        cout << buffer.str() << endl;
     }
 
     pclose(fp);
@@ -59,11 +61,57 @@ vector<mac_disk> mac_functions::mac_GetDisks()
     pclose(fp);
 
     for(int i = 0; i < cnt; i++) {
+        if (diskSizeInMB.at(i) < 70000) {
         mac_disk disk(disksLocation.at(i), disksMountLocation.at(i), diskSizeInMB.at(i));
         disks.push_back(disk);
+        }
     }
 
     return disks;
 }
 
-//#endif
+
+void mac_functions::unmountDisk(string device)
+{
+    // Unmounting device
+    char cmd[] = "sudo diskutil unmount /dev/disk4s1";
+    char path[PATH_MAX];
+    FILE * fp = popen(cmd, "r");
+    while ( fgets( path, PATH_MAX, fp ) != NULL ) {
+        stringstream buffer;
+        buffer << path << endl;
+    }
+
+    pclose(fp);
+}
+
+void mac_functions::restoreImage(string image, string device)
+{
+    // Starting the DD restore
+    unmountDisk("hoi");
+    char cmd[] = "sudo dd if=/Users/Koenkk/Desktop/i.img of=/dev/rdisk4 bs=1m 2>/tmp/process &";
+    char path[PATH_MAX];
+    FILE * fp = popen(cmd, "r");
+    while ( fgets( path, PATH_MAX, fp ) != NULL ) {
+        stringstream buffer;
+        buffer << path << endl;
+    }
+
+    fp = popen("echo $!","r");
+    while ( fgets( path, PATH_MAX, fp ) != NULL ) {
+        stringstream buffer;
+        cout << path << endl;
+    }
+
+    pclose(fp);
+}
+
+ int mac_functions::getRestoreProgress()
+ {
+    return 0;
+ }
+
+
+
+
+

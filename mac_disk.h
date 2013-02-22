@@ -9,7 +9,6 @@ class mac_disk
 {
 public:
     mac_disk(string FsLocation, string MountLocation, long TotalSizeInMB);
-private:
     string fsLocation;
     string mountLocation;
     long totalSizeInMB;
