@@ -1,12 +1,16 @@
 #include "mac_disk.h"
 #include <ctype.h>
 #include "sstream"
-#include <string.h>
+#include <string>
 #include "iostream"
+#include <algorithm>
 
 
 mac_disk::mac_disk(string FsLocation, string MountLocation, long TotalSizeInMB)
 {
+    FsLocation.erase(std::remove(FsLocation.begin(), FsLocation.end(), '\n'), FsLocation.end());
+    MountLocation.erase(std::remove(MountLocation.begin(), MountLocation.end(), '\n'), MountLocation.end());
+
     fsLocation = FsLocation;
     mountLocation = MountLocation;
     totalSizeInMB = TotalSizeInMB;
@@ -37,3 +41,4 @@ string mac_disk::getMountLocation() {
 long mac_disk::getTotalSizeInMB() {
     return totalSizeInMB;
 }
+

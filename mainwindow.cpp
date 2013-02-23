@@ -104,9 +104,8 @@ void MainWindow::refreshDrives()
         mac_disk md = macDisks[i];
         stringstream ss;
 
-        ss << "(" << md.totalSizeInMB << " MB) " << md.mountLocation;
-        ss << QString::fromStdString(md.getMountLocation());
-        ui->cbVolumes->addItem(md.getMountLocation().c_str());
+        ss << "(" << md.getTotalSizeInMB() << " MB) " << md.getMountLocation();
+        ui->cbVolumes->addItem(ss.str().c_str());
     }
 #endif
 }
