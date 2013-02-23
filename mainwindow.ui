@@ -99,6 +99,16 @@
       <property name="title">
        <string>2. Select SD card</string>
       </property>
+      <widget class="QComboBox" name="cbVolumes">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>271</width>
+         <height>26</height>
+        </rect>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="groupBox_3">
       <property name="geometry">
@@ -178,31 +188,6 @@
     </property>
     <property name="text">
      <string>TextLabel</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="cbSDCards">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>50</y>
-      <width>341</width>
-      <height>26</height>
-     </rect>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::LeftToRight</enum>
-    </property>
-    <property name="autoFillBackground">
-     <bool>true</bool>
-    </property>
-    <property name="currentText">
-     <string/>
-    </property>
-    <property name="sizeAdjustPolicy">
-     <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
-    </property>
-    <property name="frame">
-     <bool>false</bool>
     </property>
    </widget>
   </widget>

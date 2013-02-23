@@ -25,3 +25,15 @@ int mac_disk::getDiskNumber()
     int i = atoi(ss.str().c_str());
     return i;
 }
+
+string mac_disk::getFsLocation() {
+    return fsLocation;
+}
+
+string mac_disk::getMountLocation() {
+    return this->mountLocation;
+}
+
+long mac_disk::getTotalSizeInMB() {
+    return totalSizeInMB;
+}

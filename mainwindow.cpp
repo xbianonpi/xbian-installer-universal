@@ -3,9 +3,10 @@
 #include "vector"
 #include "sstream"
 #include "iostream"
-#include <QtXml/QXmlSimpleReader>
+#include <QDomDocument>
 #include <QNetworkAccessManager>
 #include "version.h"
+#include "QString"
 
 #ifdef Q_WS_X11
 #endif
@@ -41,28 +42,48 @@ void MainWindow::initXMLRequestFromWeb(QUrl url)
     manager->get(QNetworkRequest(url));
 }
 
-void MainWindow::fileIsReady( QNetworkReply * reply)
+void MainWindow::fileIsReady(QNetworkReply* reply)
 {
-    QXmlStreamReader reader(reply);
+    versions.clear();
+    QDomDocument xml;
+    xml.setContent(reply);
 
-    while (!reader.atEnd() && !reader.hasError()) {
-        QXmlStreamReader::TokenType token = reader.readNext();
-        if(token == QXmlStreamReader::StartDocument)  continue;
-        if(token == QXmlStreamReader::StartElement) {
-            if (reader.name() == "mirrors") continue;
-            if (reader.name() == "version") versions.push_back(version(reader));
+    QDomElement docElem = xml.documentElement();
+    QString rootTag = docElem.tagName(); // == persons
+    QDomNodeList nodeList = docElem.elementsByTagName("version");
+
+    for (int i = 0; i < nodeList.count(); i++) {
+        QDomElement el = nodeList.at(i).toElement();
+
+        QDomNode pEntries = el.firstChild();
+        string name;
+        string locations;
+        string md5;
+
+        while(!pEntries.isNull()) {
+            QDomElement peData = pEntries.toElement();
+            QString tagNam = peData.tagName();
+
+            if (tagNam == "name") name = peData.text().toStdString();
+            if (tagNam == "locations") locations = peData.text().toStdString();
+            if (tagNam == "md5") md5 = peData.text().toStdString();
+
+            pEntries = pEntries.nextSibling();
         }
-    }
 
-    reader.clear();
+        version v(name, locations, md5);
+        versions.push_back(v);
+    }
 
     this->refreshUI();
 }
 
 void MainWindow::refreshUI() {
     ui->cbVersions->clear();
+
+
     for (version v : versions) {
-        ui->cbVersions->addItem(v.getVersionName());
+        ui->cbVersions->addItem(v.getVersionName().c_str());
     }
 }
 
@@ -73,7 +94,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::refreshDrives()
 {
-    ui->cbSDCards->clear();
+    ui->cbVolumes->clear();
 
 #ifdef Q_OS_MAC
     mac_functions mf;
@@ -82,8 +103,10 @@ void MainWindow::refreshDrives()
     for (uint i = 0; i < macDisks.size(); i++) {
         mac_disk md = macDisks[i];
         stringstream ss;
+
         ss << "(" << md.totalSizeInMB << " MB) " << md.mountLocation;
-        ui->cbSDCards->addItem(ss.str().c_str());
+        ss << QString::fromStdString(md.getMountLocation());
+        ui->cbVolumes->addItem(md.getMountLocation().c_str());
     }
 #endif
 }
@@ -91,7 +114,7 @@ void MainWindow::refreshDrives()
 void MainWindow::restoreImage(string image)
 {
 #ifdef Q_OS_MAC
-    mac_disk md = macDisks[ui->cbSDCards->currentIndex()];
+    mac_disk md = macDisks[ui->cbVolumes->currentIndex()];
     md.getDiskNumber();
 
     std::cout << "restore"  << std::endl;

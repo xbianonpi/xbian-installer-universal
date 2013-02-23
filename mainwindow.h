@@ -20,6 +20,7 @@ public:
     
 private slots:
     void on_btInstall_clicked();
+    void fileIsReady(QNetworkReply* reply);
 
 private:
     Ui::MainWindow *ui;
@@ -27,6 +28,7 @@ private:
     void restoreImage(string image);
     void initXMLRequestFromWeb(QUrl url);
     void refreshUI();
+
 };
 
 #endif // MAINWINDOW_H
