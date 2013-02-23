@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "vector"
 #include "sstream"
+#include "iostream"
 
 #ifdef Q_WS_X11
 #endif
@@ -46,18 +47,24 @@ void MainWindow::refreshDrives()
 #endif
 }
 
-void MainWindow::restoreImage(string image, string device)
+void MainWindow::restoreImage(string image)
 {
 #ifdef Q_OS_MAC
+    mac_disk md = macDisks[ui->cbSDCards->currentIndex()];
+    md.getDiskNumber();
 
-
+    std::cout << "restore"  << std::endl;
+    ui->progressBar->setValue(0);
     mac_functions mf;
-    mf.restoreImage("test","test");
-   // mf.restoreImage(image, device);
+    mf.restoreImage(image,md);
 
-   // while (mf.getRestoreProgress() != -1) {
-    //    ui->progressBar->setValue(mf.getRestoreProgress());
-   // }
+    while (mf.getRestoreProgress() != -1) {
+        cout << mf.getRestoreProgress();
+        ui->progressBar->setValue(mf.getRestoreProgress());
+    }
+
+
+
 #endif
 }
 
@@ -65,6 +72,5 @@ void MainWindow::restoreImage(string image, string device)
 
 void MainWindow::on_btInstall_clicked()
 {
-    restoreImage("test","test");
-
+    restoreImage("/Users/Koenkk/Desktop/i.img");
 }

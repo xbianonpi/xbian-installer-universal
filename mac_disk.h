@@ -12,6 +12,7 @@ public:
     string fsLocation;
     string mountLocation;
     long totalSizeInMB;
+    int getDiskNumber();
 };
 
 #endif // MAC_DISK_H

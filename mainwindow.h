@@ -23,7 +23,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     void refreshDrives();
-    void restoreImage(string image, string device);
+    void restoreImage(string image);
 };
 
 #endif // MAINWINDOW_H

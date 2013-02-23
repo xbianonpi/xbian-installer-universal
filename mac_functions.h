@@ -11,10 +11,10 @@ class mac_functions
 public:
     mac_functions();
     vector<mac_disk> mac_GetDisks();
-    void restoreImage(string image, string device);
+    void restoreImage(string image, mac_disk disk);
     int getRestoreProgress();
 private:
-    void unmountDisk(string device);
+    void unmountDisk(mac_disk disk);
 };
 
 #endif // MAC_FUNCTIONS_H

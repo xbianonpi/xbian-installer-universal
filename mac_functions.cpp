@@ -2,8 +2,11 @@
 #include <iostream>
 #include "sstream"
 #include "stdio.h"
+#include "stdlib.h"
 
 int processID;
+long imageSize;
+int timePassed;
 
 mac_functions::mac_functions()
 {
@@ -42,7 +45,6 @@ vector<mac_disk> mac_functions::mac_GetDisks()
         buffer << path2 << endl;
         long sizeInMB = (atol(buffer.str().c_str()) / 1024);
         diskSizeInMB.push_back(sizeInMB);
-        cout << buffer.str() << endl;
     }
 
     pclose(fp);
@@ -71,44 +73,67 @@ vector<mac_disk> mac_functions::mac_GetDisks()
 }
 
 
-void mac_functions::unmountDisk(string device)
-{
+void mac_functions::unmountDisk(mac_disk disk)
+{    
     // Unmounting device
-    char cmd[] = "sudo diskutil unmount /dev/disk4s1";
-    char path[PATH_MAX];
-    FILE * fp = popen(cmd, "r");
-    while ( fgets( path, PATH_MAX, fp ) != NULL ) {
-        stringstream buffer;
-        buffer << path << endl;
+    for (int i = 0; i < 5; i++) {
+        stringstream ss;
+        ss << "sudo diskutil unmount /dev/disk" << disk.getDiskNumber() << "s" << i;
+        system(ss.str().c_str());
     }
-
-    pclose(fp);
 }
 
-void mac_functions::restoreImage(string image, string device)
+void mac_functions::restoreImage(string image, mac_disk disk)
 {
-    // Starting the DD restore
-    unmountDisk("hoi");
-    char cmd[] = "sudo dd if=/Users/Koenkk/Desktop/i.img of=/dev/rdisk4 bs=1m 2>/tmp/process &";
+    cout << "DEBUG: PID:" << disk.getDiskNumber() << endl;
+
+    // Getting the size of the image that is going to be restored
+    stringstream ss;
+    ss << "ls -Al " << image <<" | awk '{print $5}'";
+    imageSize = system(ss.str().c_str());
+
+    // Starting the restore
+    stringstream cmd_DD;
+    cmd_DD << "sudo dd if=" << image << " of=/dev/rdisk" << disk.getDiskNumber() << " bs=1m &";
+
+    unmountDisk(disk);
+    system(cmd_DD.str().c_str());
+    usleep(500000);
+
+    // Getting the process id of DD
+    stringstream cmd_PID;
+    cmd_PID << "ps aux | grep 'dd if=" << image << " of=/dev/rdisk" << disk.getDiskNumber() << " bs=1m' | awk '{print $2}'";
+    cout << cmd_PID.str() << endl;
     char path[PATH_MAX];
-    FILE * fp = popen(cmd, "r");
+    FILE * fp = popen(cmd_PID.str().c_str(), "r");
     while ( fgets( path, PATH_MAX, fp ) != NULL ) {
         stringstream buffer;
         buffer << path << endl;
+        processID = atoi(buffer.str().c_str());
+        break;
     }
 
-    fp = popen("echo $!","r");
-    while ( fgets( path, PATH_MAX, fp ) != NULL ) {
-        stringstream buffer;
-        cout << path << endl;
-    }
-
-    pclose(fp);
+    cout << "DEBUG: PID of DD:" << processID << endl;
 }
 
  int mac_functions::getRestoreProgress()
  {
-    return 0;
+     stringstream ss;
+     ss << "kill -0 " << processID << " 2>/dev/null; echo $?";
+     int i = system (ss.str().c_str());
+     timePassed++;
+
+     if (i != 0) {
+         ss << "nohup kill -s SIGINFO " << processID << " 2>/tmp/process 1>/dev/null;";
+         system(ss.str().c_str());
+
+         ss << "cat /tmp/process | grep -a bytes | awk '{print $1}'";
+         long newCopied = system(ss.str().c_str());
+
+         return (newCopied*100)/imageSize;
+     }
+
+    return -1;
  }
 
 
