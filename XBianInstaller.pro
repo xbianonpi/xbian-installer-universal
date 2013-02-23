@@ -5,6 +5,9 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += network
+QT       += xml
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -16,11 +19,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     win_functions.cpp \
     mac_functions.cpp \
-    mac_disk.cpp
+    mac_disk.cpp \
+    version.cpp
 
 HEADERS  += mainwindow.h \
     win_functions.h \
     mac_functions.h \
-    mac_disk.h
+    mac_disk.h \
+    version.h \
+    md5.h
 
 FORMS    += mainwindow.ui

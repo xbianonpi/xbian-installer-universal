@@ -68,7 +68,7 @@
       <property name="title">
        <string>1. Select version</string>
       </property>
-      <widget class="QComboBox" name="comboBox">
+      <widget class="QComboBox" name="cbVersions">
        <property name="geometry">
         <rect>
          <x>10</x>

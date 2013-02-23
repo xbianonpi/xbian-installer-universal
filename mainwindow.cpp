@@ -3,6 +3,9 @@
 #include "vector"
 #include "sstream"
 #include "iostream"
+#include <QtXml/QXmlSimpleReader>
+#include <QNetworkAccessManager>
+#include "version.h"
 
 #ifdef Q_WS_X11
 #endif
@@ -18,10 +21,49 @@
 
 using namespace std;
 
+#define mirrorsXMLLocation "http://download.brantje.com/xbian/mirrors.xml"
+
+QBuffer xmldata;
+int XMLRequestId;
+vector<version> versions;
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    initXMLRequestFromWeb(QUrl(mirrorsXMLLocation));
     refreshDrives();
+}
+
+void MainWindow::initXMLRequestFromWeb(QUrl url)
+{
+    QNetworkAccessManager * manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileIsReady(QNetworkReply*)) );
+    manager->get(QNetworkRequest(url));
+}
+
+void MainWindow::fileIsReady( QNetworkReply * reply)
+{
+    QXmlStreamReader reader(reply);
+
+    while (!reader.atEnd() && !reader.hasError()) {
+        QXmlStreamReader::TokenType token = reader.readNext();
+        if(token == QXmlStreamReader::StartDocument)  continue;
+        if(token == QXmlStreamReader::StartElement) {
+            if (reader.name() == "mirrors") continue;
+            if (reader.name() == "version") versions.push_back(version(reader));
+        }
+    }
+
+    reader.clear();
+
+    this->refreshUI();
+}
+
+void MainWindow::refreshUI() {
+    ui->cbVersions->clear();
+    for (version v : versions) {
+        ui->cbVersions->addItem(v.getVersionName());
+    }
 }
 
 MainWindow::~MainWindow()
@@ -32,7 +74,6 @@ MainWindow::~MainWindow()
 void MainWindow::refreshDrives()
 {
     ui->cbSDCards->clear();
-
 
 #ifdef Q_OS_MAC
     mac_functions mf;

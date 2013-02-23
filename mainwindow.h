@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QtNetwork>
 
 using namespace std;
 
@@ -24,6 +25,8 @@ private:
     Ui::MainWindow *ui;
     void refreshDrives();
     void restoreImage(string image);
+    void initXMLRequestFromWeb(QUrl url);
+    void refreshUI();
 };
 
 #endif // MAINWINDOW_H
