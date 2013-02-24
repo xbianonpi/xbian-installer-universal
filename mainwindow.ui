@@ -32,143 +32,11 @@
    <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QTabWidget" name="tabWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>100</y>
-      <width>321</width>
-      <height>271</height>
-     </rect>
-    </property>
-    <property name="currentIndex">
-     <number>0</number>
-    </property>
-    <widget class="QWidget" name="Easy">
-     <attribute name="title">
-      <string>Easy</string>
-     </attribute>
-     <widget class="QGroupBox" name="groupBox">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>0</y>
-        <width>291</width>
-        <height>61</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>13</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="title">
-       <string>1. Select version</string>
-      </property>
-      <widget class="QComboBox" name="cbVersions">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>30</y>
-         <width>271</width>
-         <height>26</height>
-        </rect>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QGroupBox" name="groupBox_2">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>70</y>
-        <width>291</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>13</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="title">
-       <string>2. Select SD card</string>
-      </property>
-      <widget class="QComboBox" name="cbVolumes">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>30</y>
-         <width>271</width>
-         <height>26</height>
-        </rect>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QGroupBox" name="groupBox_3">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>140</y>
-        <width>291</width>
-        <height>61</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <pointsize>13</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="title">
-       <string>3. Install</string>
-      </property>
-      <widget class="QPushButton" name="btInstall">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>30</y>
-         <width>281</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Install</string>
-       </property>
-      </widget>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="widget">
-     <attribute name="title">
-      <string>Advanced</string>
-     </attribute>
-     <widget class="QLabel" name="label">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>110</y>
-        <width>161</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Coming soon...</string>
-      </property>
-     </widget>
-    </widget>
-   </widget>
    <widget class="QProgressBar" name="progressBar">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>420</y>
+      <y>400</y>
       <width>321</width>
       <height>23</height>
      </rect>
@@ -177,7 +45,7 @@
      <number>24</number>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="lbProgress">
     <property name="geometry">
      <rect>
       <x>11</x>
@@ -187,8 +55,107 @@
      </rect>
     </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string>Nothing in progress</string>
     </property>
+    <property name="wordWrap">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="gbInstall">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>260</y>
+      <width>291</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>13</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="title">
+     <string>3. Install</string>
+    </property>
+    <widget class="QPushButton" name="btInstall">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>30</y>
+       <width>281</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Install</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="gbSelectVersion">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>120</y>
+      <width>291</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>13</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="title">
+     <string>1. Select version</string>
+    </property>
+    <widget class="QComboBox" name="cbVersions">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>271</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="gbSelectSDCard">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>190</y>
+      <width>291</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>13</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="title">
+     <string>2. Select SD card</string>
+    </property>
+    <widget class="QComboBox" name="cbVolumes">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>271</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

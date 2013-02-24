@@ -4,6 +4,7 @@
 #include "string"
 #include "vector"
 #include "QXmlStreamReader"
+#include "QFile"
 
 using namespace std;
 
@@ -13,7 +14,7 @@ public:
     version(string name, string locations, string md5);
     string getRandomMirror();
     string getVersionName();
-    bool checkMD5(string md5);
+    bool checkMD5(QFile* file);
     string getArchiveName();
 private:
     string versionName;

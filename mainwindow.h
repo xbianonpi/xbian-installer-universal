@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QtNetwork>
+#include "version.h"
 
 using namespace std;
 
@@ -21,6 +22,10 @@ public:
 private slots:
     void on_btInstall_clicked();
     void fileIsReady(QNetworkReply* reply);
+    void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
+    void downloadFinished();
+    void downloadReadyRead();
+    void cancelDownload();
 
 private:
     Ui::MainWindow *ui;
@@ -28,6 +33,17 @@ private:
     void restoreImage(string image);
     void initXMLRequestFromWeb(QUrl url);
     void refreshUI();
+    void downloadFile(QUrl url);
+    void installVersion(version ver);
+
+
+    QNetworkAccessManager manager;
+        QFile *file;
+        QString filename;
+        QNetworkReply *reply;
+        bool downloadRequestAborted;
+        bool downloadInProgress;
+
 
 };
 

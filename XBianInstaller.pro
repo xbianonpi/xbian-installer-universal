@@ -26,7 +26,9 @@ HEADERS  += mainwindow.h \
     win_functions.h \
     mac_functions.h \
     mac_disk.h \
-    version.h \
-    md5.h
+    version.h
 
 FORMS    += mainwindow.ui
+
+OTHER_FILES += \
+    logo.png

@@ -1,8 +1,9 @@
 #include "version.h"
 #include "sstream"
-#include "md5.h"
 #include "algorithm"
 #include "string.h"
+#include "iostream"
+#include "QCryptographicHash"
 
 version::version(string name, string locations, string md5)
 {
@@ -36,18 +37,19 @@ string version::getVersionName() {
     return this->versionName;
 }
 
-bool version::checkMD5(string md5sum) {
-    MD5 md5;
+bool version::checkMD5(QFile* file) {
+    if(file->open(QIODevice::ReadOnly))
+      {
+        QCryptographicHash* hash;
 
-    string archiveName = this->getArchiveName();
-    char *file = new char[archiveName.length() + 1];
-    strcpy(file, archiveName.c_str());
+        QString fileHash = hash->hash(file->readAll(),QCryptographicHash::Md5).toHex();
+        file->close();
+        cout << "Original MD5: " << this->md5 << endl;
+        cout << "File MD5: " << fileHash.toStdString();
+        if (this->md5 == fileHash.toStdString()) return true;
+      }
 
-    char *md5sumGiven = new char[md5sum.length() + 1];
-    strcpy(md5sumGiven,md5sum.c_str());
-
-    if (md5sumGiven == md5.digestFile(file)) return true;
-    else return false;
+    return false;
 }
 
 string version::getArchiveName() {
