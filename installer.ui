@@ -25,7 +25,7 @@
    <enum>Qt::NoContextMenu</enum>
   </property>
   <property name="windowTitle">
-   <string>Installer</string>
+   <string>XBian installer</string>
   </property>
   <property name="windowIcon">
    <iconset>
