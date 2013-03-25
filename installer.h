@@ -59,6 +59,8 @@ private:
     QUrl downloadUrl;
     DiskWriter *diskWriter;
     bool isCancelled;
+    int percentage;
+    long totalImageSize;
 
 private slots:
     void cancel();
@@ -69,6 +71,7 @@ private slots:
     void getImageFileNameFromUser();
     void writeImageToDevice();
     void updateUI();
+    void updateWriteProgress(int i);
 };
 
 #endif // INSTALLER_H

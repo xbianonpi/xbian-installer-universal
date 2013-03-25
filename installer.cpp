@@ -41,11 +41,11 @@ Installer::Installer(QWidget *parent) :
     refreshDeviceList();
 
     connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileListReply(QNetworkReply*)));
-    connect(ui->cancelButton, SIGNAL(clicked()), this, SLOT(cancel()));
     connect(ui->writeButton, SIGNAL(clicked()), this, SLOT(writeImageToDevice()));
-    connect(diskWriter, SIGNAL(bytesWritten(int)), ui->progressBar, SLOT(setValue(int)));
     connect(ui->releaseLinks, SIGNAL(currentTextChanged(QString)), this, SLOT(updateUI()));
     connect(ui->removableDevicesComboBox, SIGNAL(currentTextChanged(QString)), this, SLOT(updateUI()));
+    connect(diskWriter, SIGNAL(bytesWritten(int)), this, SLOT(updateWriteProgress(int)));
+
     isCancelled = false;
     xmlHandler *handler = new xmlHandler;
     xmlReader.setContentHandler(handler);
@@ -83,6 +83,15 @@ void Installer::cancel()
 
     if (!isCancelled)
         isCancelled = true;
+
+    this->state = STATE_IDLE;
+}
+
+void Installer::updateWriteProgress(int i) {
+    qDebug() << "Total image size:" << this->totalImageSize;
+    qDebug() << "Written: " << i;
+    this->percentage = (qreal)i/this->totalImageSize * 100;
+    this->updateUI();
 }
 
 void Installer::parseAndSetLinks(const QByteArray &data)
@@ -101,7 +110,6 @@ void Installer::parseAndSetLinks(const QByteArray &data)
     }
 
     ui->releaseLinks->clear();
-
     // Clear the imagesnames list as we are refreshing the images
     imageNames.clear();
 
@@ -144,13 +152,13 @@ void Installer::saveAndUpdateProgress(QNetworkReply *reply)
     bytesDownloaded += contentLength;
 
     // Update progress bar
-    ui->progressBar->setMaximum(total);
-    ui->progressBar->setValue(bytesDownloaded);
+    this->percentage = (qreal)bytesDownloaded/total * 100;
+    this->updateUI();
     qDebug() << bytesDownloaded << "/" << total << "=" << (qreal)bytesDownloaded/total * 100 << "%";
 
     if (bytesDownloaded == total) {
         // Done!
-        reset();
+        this->writeImageToDevice();
     }
 }
 
@@ -182,7 +190,6 @@ void Installer::reset()
         imageFile.close();
     }
     //ui->writeButton->setEnabled( !ui->fileNameLabel->text().isEmpty());
-    ui->cancelButton->setEnabled(true);
     ui->removableDevicesComboBox->setEnabled(true);
     isCancelled = false;
 }
@@ -195,6 +202,23 @@ void Installer::updateUI() {
         ui->writeButton->setEnabled(false);
     } else {
         ui->writeButton->setEnabled(true);
+    }
+
+    switch (state) {
+    case STATE_IDLE: ui->writeButton->setText("Install");
+        break;
+    case STATE_GETTING_URL:ui->writeButton->setText("Preparing download...");
+        break;
+    case STATE_DOWNLOADING_IMAGE: ui->writeButton->setText(QString("Downloading (%1%), press to cancel").arg(this->percentage));
+        break;
+    case STATE_WRITING_IMAGE: ui->writeButton->setText(QString("Installing (%1%), press to cancel").arg(this->percentage));
+        break;
+    case STATE_GETTING_LINKS: ui->writeButton->setText("Preparing download...");
+        break;
+    }
+
+    if (this->state == this->STATE_IDLE) {
+        ui->writeButton->setText("Install");
     }
 }
 
@@ -296,10 +320,12 @@ void Installer::downloadImage(QNetworkReply *reply)
 
 void Installer::fileListReply(QNetworkReply *reply)
 {
+
+    this->updateUI();
     QByteArray replyData;
     if (isCancelled) {
         isCancelled = false;
-        ui->progressBar->setValue(ui->progressBar->minimum());
+        this->percentage = 0;
         reset();
     }
 
@@ -318,10 +344,12 @@ void Installer::fileListReply(QNetworkReply *reply)
                     file.close();
                 }
             }
+            this->state = STATE_IDLE;
+            this->updateUI();
             reset();
             break;
         case STATE_GETTING_URL:
-            ui->messageBar->setText("Preparing download...");
+            this->updateUI();
             if (redirectionUrl.isValid()) {
                 downloadUrl = redirectionUrl;
                 QNetworkRequest request = reply->request();
@@ -335,7 +363,7 @@ void Installer::fileListReply(QNetworkReply *reply)
             downloadImage(reply);
             break;
         case STATE_DOWNLOADING_IMAGE:
-            ui->messageBar->setText("Downloading...");
+            this->updateUI();
             switch (responseCode) {
             case RESPONSE_FOUND:
             case RESPONSE_REDIRECT:
@@ -344,8 +372,7 @@ void Installer::fileListReply(QNetworkReply *reply)
             case RESPONSE_OK:
                 // Probably a small file
                 imageFile.write(reply->readAll());
-                ui->progressBar->setValue(ui->progressBar->maximum());
-                reset();
+                this->percentage = 100;
                 this->writeImageToDevice();
                 break;
             case RESPONSE_PARTIAL:
@@ -377,6 +404,13 @@ void Installer::getImageFileNameFromUser()
 
 void Installer::writeImageToDevice()
 {
+    // Check if there is some progress happening, if so this button is a cancel button
+    if (this->state != this->STATE_IDLE) {
+        this->cancel();
+        this->updateUI();
+        return;
+    }
+
     // Get the image file name of the version which the user want to install
     QString selectedImage = imageNames.at(ui->releaseLinks->currentIndex());
     setImageFileName(selectedImage);
@@ -420,13 +454,13 @@ void Installer::writeImageToDevice()
         return;
     }
 
-    ui->progressBar->setValue(0);
-    ui->progressBar->setMaximum(getUncompressedImageSize());
+    this->percentage = 0;
+    this->totalImageSize = this->getUncompressedImageSize();
 
     // TODO: make portable
     QString destination = ui->removableDevicesComboBox->currentText();
 
-    ui->messageBar->setText("Installing XBian...");
+    this->updateUI();
 
     if (destination.isNull()) {
         reset();
@@ -438,10 +472,11 @@ void Installer::writeImageToDevice()
         imageFile.close();
     }
 
+    this->state = this->STATE_WRITING_IMAGE;
     if (diskWriter->open(destination) < 0) {
         qDebug() << "Failed to open output device";
         reset();
-        ui->messageBar->setText("Unable to open "+destination+". Are you root?");
+        //ui->messageBar->setText("Unable to open "+destination+". Are you root?");
         return;
     }
 

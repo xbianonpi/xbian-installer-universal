@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>307</width>
-    <height>305</height>
+    <height>179</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -40,55 +40,11 @@
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
   </property>
-  <widget class="QLabel" name="messageBar">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>340</y>
-     <width>271</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="font">
-    <font>
-     <family>Verdana</family>
-     <pointsize>9</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignJustify|Qt::AlignVCenter</set>
-   </property>
-  </widget>
-  <widget class="QProgressBar" name="progressBar">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>150</y>
-     <width>281</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="value">
-    <number>0</number>
-   </property>
-   <property name="textVisible">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QLabel" name="releaseLabel">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>20</y>
+     <y>10</y>
      <width>171</width>
      <height>18</height>
     </rect>
@@ -115,7 +71,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>180</y>
+     <y>140</y>
      <width>281</width>
      <height>31</height>
     </rect>
@@ -135,7 +91,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>40</y>
+     <y>30</y>
      <width>281</width>
      <height>20</height>
     </rect>
@@ -147,30 +103,11 @@
     </font>
    </property>
   </widget>
-  <widget class="QPushButton" name="cancelButton">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>270</y>
-     <width>281</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="text">
-    <string>Cancel</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>80</y>
+     <y>70</y>
      <width>231</width>
      <height>18</height>
     </rect>
@@ -191,7 +128,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>100</y>
+     <y>90</y>
      <width>281</width>
      <height>20</height>
     </rect>
