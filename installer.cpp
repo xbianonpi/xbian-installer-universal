@@ -29,6 +29,9 @@ Installer::Installer(QWidget *parent) :
     ui->setupUi(this);
     manager.setParent(this);
 
+    QIcon icon(":/logo/icon.ico");
+    this->setWindowIcon(icon);
+
 #if defined(Q_OS_WIN)
     diskWriter = new DiskWriter_windows(this);
 #elif defined(Q_OS_UNIX)

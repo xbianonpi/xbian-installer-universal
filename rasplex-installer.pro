@@ -35,7 +35,6 @@ win32 {
     HEADERS += diskwriter_windows.h
     CONFIG += rtti
 
-    RC_FILE = rasplex-installer.rc
 }
 unix {
     SOURCES += diskwriter_unix.cpp
@@ -49,4 +48,4 @@ LIBS += -L3rd-party -lz
 OTHER_FILES +=
 
 RESOURCES += \
-    resources.qrc
+    rsc.qrc
