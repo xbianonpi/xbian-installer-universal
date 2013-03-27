@@ -22,7 +22,7 @@ static { # everything below takes effect with CONFIG += static
     message("~~~ static build ~~~") # this is for information, that the static build is done
 }
 
-QMAKE_LFLAGS  = -static -static-libgcc
+
 
 HEADERS  += installer.h \
     xmlhandler.h \
@@ -34,7 +34,7 @@ win32 {
     SOURCES += diskwriter_windows.cpp
     HEADERS += diskwriter_windows.h
     CONFIG += rtti
-
+    QMAKE_LFLAGS  = -static -static-libgcc
 }
 unix {
     SOURCES += diskwriter_unix.cpp
