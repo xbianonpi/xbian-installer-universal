@@ -87,6 +87,7 @@ void Installer::cancel()
     if (!isCancelled)
         isCancelled = true;
 
+    qDebug () << "Setting state idle! k";
     this->state = STATE_IDLE;
 }
 
@@ -163,9 +164,10 @@ void Installer::saveAndUpdateProgress(QNetworkReply *reply)
     this->percentage = (qreal)bytesDownloaded/total * 100;
     this->updateUI();
     qDebug() << bytesDownloaded << "/" << total << "=" << (qreal)bytesDownloaded/total * 100 << "%";
-
-    if (bytesDownloaded == total) {
+    qDebug() << this->state;
+    if (this->percentage == 100) {
         // Done!
+        this->state = STATE_IDLE;
         this->writeImageToDevice();
     }
 }
@@ -188,18 +190,6 @@ void Installer::extractByteOffsetsFromContentLength(qlonglong &first, qlonglong 
 
     // Total
     total = s.toLongLong();
-}
-
-void Installer::reset()
-{
-    state = STATE_IDLE;
-    bytesDownloaded = 0;
-    if (imageFile.isOpen()) {
-        imageFile.close();
-    }
-    //ui->btInstall->setEnabled( !ui->fileNameLabel->text().isEmpty());
-    ui->cbSDcards->setEnabled(true);
-    isCancelled = false;
 }
 
 void Installer::updateUI() {
@@ -239,10 +229,6 @@ void Installer::updateUI() {
         break;
     case STATE_GETTING_LINKS: ui->btInstall->setText("Preparing download...");
         break;
-    }
-
-    if (this->state == this->STATE_IDLE) {
-        ui->btInstall->setText("Install");
     }
 }
 
@@ -329,7 +315,6 @@ void Installer::downloadImage(QNetworkReply *reply)
     // This is the first valid packet, save it!
     qDebug() << "Final url:" << downloadUrl << total;
     if (!imageFile.isOpen() && !imageFile.open(QFile::ReadWrite)) {
-        reset();
         return;
     }
 
@@ -342,6 +327,19 @@ void Installer::downloadImage(QNetworkReply *reply)
     }
 }
 
+void Installer::reset()
+{
+    qDebug () << "Setting state idle! j";
+    state = STATE_IDLE;
+    bytesDownloaded = 0;
+    if (imageFile.isOpen()) {
+        imageFile.close();
+    }
+    //ui->writeButton->setEnabled( !ui->fileNameLabel->text().isEmpty());
+    ui->cbSDcards->setEnabled(true);
+    isCancelled = false;
+}
+
 void Installer::fileListReply(QNetworkReply *reply)
 {
 
@@ -350,7 +348,6 @@ void Installer::fileListReply(QNetworkReply *reply)
     if (isCancelled) {
         isCancelled = false;
         this->percentage = 0;
-        reset();
     }
 
     if(reply->error() == QNetworkReply::NoError)
@@ -368,6 +365,7 @@ void Installer::fileListReply(QNetworkReply *reply)
                     file.close();
                 }
             }
+            qDebug () << "Setting state idle! l";
             this->state = STATE_IDLE;
             this->updateUI();
             reset();
@@ -396,8 +394,7 @@ void Installer::fileListReply(QNetworkReply *reply)
             case RESPONSE_OK:
                 // Probably a small file
                 imageFile.write(reply->readAll());
-                this->percentage = 100;
-                this->writeImageToDevice();
+                qDebug() << "Respone OK";
                 break;
             case RESPONSE_PARTIAL:
                 saveAndUpdateProgress(reply);
@@ -428,6 +425,9 @@ void Installer::getImageFileNameFromUser()
 
 void Installer::writeImageToDevice()
 {
+    qDebug () << this->STATE_IDLE;
+    qDebug () << "Write image to device called";
+    qDebug () << this->state;
     // Check if there is some progress happening, if so this button is a cancel button
     if (this->state != this->STATE_IDLE) {
         this->cancel();
@@ -487,7 +487,6 @@ void Installer::writeImageToDevice()
     this->updateUI();
 
     if (destination.isNull()) {
-        reset();
         return;
     }
 
@@ -499,7 +498,6 @@ void Installer::writeImageToDevice()
     this->state = this->STATE_WRITING_IMAGE;
     if (diskWriter->open(destination) < 0) {
         qDebug() << "Failed to open output device";
-        reset();
         //ui->messageBar->setText("Unable to open "+destination+". Are you root?");
         return;
     }
@@ -512,6 +510,7 @@ void Installer::writeImageToDevice()
 
     QString message = "XBian has succesfully been installed on your SD card, you can now plug your SD card into your Raspberry Pi";
     QMessageBox::StandardButton success = QMessageBox::warning(this, tr("Installation succesfull!"), message,QMessageBox::Ok);
+    qDebug () << "Setting state idle! m ";
     this->state = this->STATE_IDLE;
     this->updateUI();
     qDebug() << "Writing done!";
