@@ -486,5 +486,9 @@ void Installer::writeImageToDevice()
         return;
     }
 
+    QString message = "XBian has succesfully been installed on your SD card, you can now plug your SD card into your Raspberry Pi";
+    QMessageBox::StandardButton success = QMessageBox::warning(this, tr("Installation succesfull!"), message,QMessageBox::Ok);
+    this->state = this->STATE_IDLE;
+    this->updateUI();
     qDebug() << "Writing done!";
 }
