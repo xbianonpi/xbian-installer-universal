@@ -29,6 +29,8 @@ Installer::Installer(QWidget *parent) :
     ui->setupUi(this);
     manager.setParent(this);
 
+    this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
     QIcon icon(":/logo/icon.ico");
     this->setWindowIcon(icon);
 
