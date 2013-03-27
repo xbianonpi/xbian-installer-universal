@@ -8,7 +8,7 @@ QT       += core gui xml network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = XBian installer
+TARGET = XBian-installer
 TEMPLATE = app
 
 SOURCES += main.cpp\
@@ -45,7 +45,10 @@ FORMS    += installer.ui
 
 LIBS += -L3rd-party -lz
 
-OTHER_FILES +=
+OTHER_FILES += \
+    app.rc
 
 RESOURCES += \
     rsc.qrc
+
+RC_FILE = app.rc
