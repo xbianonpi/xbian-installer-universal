@@ -19,6 +19,7 @@
 
 // TODO: Get chunk size from server, or whatever
 #define CHUNKSIZE 1*1024*1024
+#define installerVersion 0.1
 
 Installer::Installer(QWidget *parent) :
     QDialog(parent),
@@ -47,6 +48,7 @@ Installer::Installer(QWidget *parent) :
     connect(ui->releaseLinks, SIGNAL(currentTextChanged(QString)), this, SLOT(updateUI()));
     connect(ui->removableDevicesComboBox, SIGNAL(currentTextChanged(QString)), this, SLOT(updateUI()));
     connect(diskWriter, SIGNAL(bytesWritten(int)), this, SLOT(updateWriteProgress(int)));
+    connect(ui->btAbout, SIGNAL(clicked()), this, SLOT(showAboutDialog()));
 
     isCancelled = false;
     xmlHandler *handler = new xmlHandler;
@@ -94,6 +96,11 @@ void Installer::updateWriteProgress(int i) {
     qDebug() << "Written: " << i;
     this->percentage = (qreal)i/this->totalImageSize * 100;
     this->updateUI();
+}
+
+void Installer::showAboutDialog() {
+    QString text = QString("Version %1\nBy Koenkk\nMade possible by Rasplex!").arg(installerVersion);
+    QMessageBox::about(this, "About",text);
 }
 
 void Installer::parseAndSetLinks(const QByteArray &data)
