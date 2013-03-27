@@ -74,8 +74,9 @@ Installer::~Installer()
 void Installer::refreshDeviceList()
 {
     qDebug() << "Refreshing device list";
+    this->devices = diskWriter->getRemovableDeviceNames();
     ui->cbSDcards->clear();
-    ui->cbSDcards->addItems(diskWriter->getRemovableDeviceNames());
+    ui->cbSDcards->addItems(devices);
     ui->cbSDcards->setCurrentIndex(ui->cbSDcards->count()-1);
 }
 
@@ -482,7 +483,7 @@ void Installer::writeImageToDevice()
     this->totalImageSize = this->getUncompressedImageSize();
 
     // TODO: make portable
-    QString destination = ui->cbSDcards->currentText();
+    QString destination = this->devices.at(ui->cbSDcards->currentIndex());
 
     this->updateUI();
 

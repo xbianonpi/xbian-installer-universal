@@ -55,6 +55,7 @@ private:
     qlonglong bytesDownloaded;
     QString imageFileName;
     QList<QString> imageNames;
+    QStringList devices;
     QFile imageFile;
     QUrl downloadUrl;
     DiskWriter *diskWriter;
