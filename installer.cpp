@@ -81,11 +81,11 @@ void Installer::refreshDeviceList()
 
 void Installer::cancel()
 {
-    if (state == STATE_WRITING_IMAGE)
-        diskWriter->cancelWrite();
-
     if (!isCancelled)
         isCancelled = true;
+
+    if (state == STATE_WRITING_IMAGE)
+        diskWriter->cancelWrite();
 
     qDebug () << "Setting state idle! k";
     this->state = STATE_IDLE;
@@ -508,10 +508,12 @@ void Installer::writeImageToDevice()
         return;
     }
 
-    QString message = "XBian has succesfully been installed on your SD card, you can now plug your SD card into your Raspberry Pi";
-    QMessageBox::StandardButton success = QMessageBox::warning(this, tr("Installation succesfull!"), message,QMessageBox::Ok);
-    qDebug () << "Setting state idle! m ";
-    this->state = this->STATE_IDLE;
-    this->updateUI();
-    qDebug() << "Writing done!";
+    if (!isCancelled) {
+        QString message = "XBian has succesfully been installed on your SD card, you can now plug your SD card into your Raspberry Pi";
+        QMessageBox::StandardButton success = QMessageBox::warning(this, tr("Installation succesfull!"), message,QMessageBox::Ok);
+        qDebug () << "Setting state idle! m ";
+        this->state = this->STATE_IDLE;
+        this->updateUI();
+        qDebug() << "Writing done!";
+    }
 }
