@@ -30,8 +30,6 @@ Installer::Installer(QWidget *parent) :
     ui->setupUi(this);
     manager.setParent(this);
 
-    this->state = STATE_PARSING_VERSIONS;
-
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     QIcon icon(":/logo/icon.ico");
@@ -205,10 +203,20 @@ void Installer::reset()
 }
 
 void Installer::updateUI() {
-    if (this->state == STATE_PARSING_VERSIONS) {
+    if (this->state == STATE_GETTING_LINKS) {
         this->setWindowTitle("Connecting...");
-        //this->ui->releaseLabel->setEnabled(false);
-        //->ui->cbVersion->setEnabled(false);
+        this->ui->cbSDcards->setEnabled(false);
+        this->ui->cbVersion->setEnabled(false);
+        this->ui->lbSelectSD->setEnabled(false);
+        this->ui->lbSelectVersion->setEnabled(false);
+        this->ui->btInstall->setEnabled(false);
+        return;
+    } else {
+        this->ui->cbSDcards->setEnabled(true);
+        this->ui->cbVersion->setEnabled(true);
+        this->ui->lbSelectSD->setEnabled(true);
+        this->ui->lbSelectVersion->setEnabled(true);
+        this->setWindowTitle("XBian installer");
     }
 
     QString selectedVersion = ui->cbVersion->itemText(ui->cbVersion->currentIndex());
