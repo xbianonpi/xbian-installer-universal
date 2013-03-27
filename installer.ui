@@ -46,7 +46,7 @@
   <property name="modal">
    <bool>false</bool>
   </property>
-  <widget class="QLabel" name="releaseLabel">
+  <widget class="QLabel" name="lbSelectVersion">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -73,7 +73,7 @@
     <string>1. Select version</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="writeButton">
+  <widget class="QPushButton" name="btInstall">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -93,7 +93,7 @@
     <string>Install</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="releaseLinks">
+  <widget class="QComboBox" name="cbVersion">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -109,7 +109,7 @@
     </font>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="lbSelectSD">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -130,7 +130,7 @@
     <string>2. Select SD card</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="removableDevicesComboBox">
+  <widget class="QComboBox" name="cbSDcards">
    <property name="geometry">
     <rect>
      <x>10</x>

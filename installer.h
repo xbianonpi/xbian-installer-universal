@@ -49,7 +49,8 @@ private:
         STATE_GETTING_LINKS,
         STATE_GETTING_URL,
         STATE_DOWNLOADING_IMAGE,
-        STATE_WRITING_IMAGE
+        STATE_WRITING_IMAGE,
+        STATE_PARSING_VERSIONS
     } state;
 
     qlonglong bytesDownloaded;

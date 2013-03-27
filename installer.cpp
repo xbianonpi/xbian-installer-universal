@@ -30,6 +30,8 @@ Installer::Installer(QWidget *parent) :
     ui->setupUi(this);
     manager.setParent(this);
 
+    this->state = STATE_PARSING_VERSIONS;
+
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     QIcon icon(":/logo/icon.ico");
@@ -44,9 +46,9 @@ Installer::Installer(QWidget *parent) :
     refreshDeviceList();
 
     connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileListReply(QNetworkReply*)));
-    connect(ui->writeButton, SIGNAL(clicked()), this, SLOT(writeImageToDevice()));
-    connect(ui->releaseLinks, SIGNAL(currentTextChanged(QString)), this, SLOT(updateUI()));
-    connect(ui->removableDevicesComboBox, SIGNAL(currentTextChanged(QString)), this, SLOT(updateUI()));
+    connect(ui->btInstall, SIGNAL(clicked()), this, SLOT(writeImageToDevice()));
+    connect(ui->cbVersion, SIGNAL(currentTextChanged(QString)), this, SLOT(updateUI()));
+    connect(ui->cbSDcards, SIGNAL(currentTextChanged(QString)), this, SLOT(updateUI()));
     connect(diskWriter, SIGNAL(bytesWritten(int)), this, SLOT(updateWriteProgress(int)));
     connect(ui->btAbout, SIGNAL(clicked()), this, SLOT(showAboutDialog()));
 
@@ -55,7 +57,6 @@ Installer::Installer(QWidget *parent) :
     xmlReader.setContentHandler(handler);
 
     setImageFileName("");
-    ui->writeButton->setEnabled(true);
 
     QFile file("foo.xml");
     if (file.open(QFile::ReadOnly)) {
@@ -75,9 +76,9 @@ Installer::~Installer()
 void Installer::refreshDeviceList()
 {
     qDebug() << "Refreshing device list";
-    ui->removableDevicesComboBox->clear();
-    ui->removableDevicesComboBox->addItems(diskWriter->getRemovableDeviceNames());
-    ui->removableDevicesComboBox->setCurrentIndex(ui->removableDevicesComboBox->count()-1);
+    ui->cbSDcards->clear();
+    ui->cbSDcards->addItems(diskWriter->getRemovableDeviceNames());
+    ui->cbSDcards->setCurrentIndex(ui->cbSDcards->count()-1);
 }
 
 void Installer::cancel()
@@ -118,7 +119,7 @@ void Installer::parseAndSetLinks(const QByteArray &data)
         return;
     }
 
-    ui->releaseLinks->clear();
+    ui->cbVersion->clear();
     // Clear the imagesnames list as we are refreshing the images
     imageNames.clear();
 
@@ -135,8 +136,8 @@ void Installer::parseAndSetLinks(const QByteArray &data)
         version.chop(7);
 
         version.replace("_"," ");
-        ui->releaseLinks->insertItem (0,version, link);
-        ui->releaseLinks->setCurrentIndex(0);
+        ui->cbVersion->insertItem (0,version, link);
+        ui->cbVersion->setCurrentIndex(0);
     }
 }
 
@@ -198,36 +199,42 @@ void Installer::reset()
     if (imageFile.isOpen()) {
         imageFile.close();
     }
-    //ui->writeButton->setEnabled( !ui->fileNameLabel->text().isEmpty());
-    ui->removableDevicesComboBox->setEnabled(true);
+    //ui->btInstall->setEnabled( !ui->fileNameLabel->text().isEmpty());
+    ui->cbSDcards->setEnabled(true);
     isCancelled = false;
 }
 
 void Installer::updateUI() {
-    QString selectedVersion = ui->releaseLinks->itemText(ui->releaseLinks->currentIndex());
-    QString selectedSDCard = ui->removableDevicesComboBox->itemText(ui->removableDevicesComboBox->currentIndex());
+    if (this->state == STATE_PARSING_VERSIONS) {
+        this->setWindowTitle("Connecting...");
+        //this->ui->releaseLabel->setEnabled(false);
+        //->ui->cbVersion->setEnabled(false);
+    }
+
+    QString selectedVersion = ui->cbVersion->itemText(ui->cbVersion->currentIndex());
+    QString selectedSDCard = ui->cbSDcards->itemText(ui->cbSDcards->currentIndex());
 
     if (selectedVersion == "" || selectedSDCard == "") {
-        ui->writeButton->setEnabled(false);
+        ui->btInstall->setEnabled(false);
     } else {
-        ui->writeButton->setEnabled(true);
+        ui->btInstall->setEnabled(true);
     }
 
     switch (state) {
-    case STATE_IDLE: ui->writeButton->setText("Install");
+    case STATE_IDLE: ui->btInstall->setText("Install");
         break;
-    case STATE_GETTING_URL:ui->writeButton->setText("Preparing download...");
+    case STATE_GETTING_URL:ui->btInstall->setText("Preparing download...");
         break;
-    case STATE_DOWNLOADING_IMAGE: ui->writeButton->setText(QString("Downloading (%1%), press to cancel").arg(this->percentage));
+    case STATE_DOWNLOADING_IMAGE: ui->btInstall->setText(QString("Downloading (%1%), press to cancel").arg(this->percentage));
         break;
-    case STATE_WRITING_IMAGE: ui->writeButton->setText(QString("Installing (%1%), press to cancel").arg(this->percentage));
+    case STATE_WRITING_IMAGE: ui->btInstall->setText(QString("Installing (%1%), press to cancel").arg(this->percentage));
         break;
-    case STATE_GETTING_LINKS: ui->writeButton->setText("Preparing download...");
+    case STATE_GETTING_LINKS: ui->btInstall->setText("Preparing download...");
         break;
     }
 
     if (this->state == this->STATE_IDLE) {
-        ui->writeButton->setText("Install");
+        ui->btInstall->setText("Install");
     }
 }
 
@@ -407,7 +414,7 @@ void Installer::getImageFileNameFromUser()
         return;
     }
     setImageFileName(filename);
-    ui->writeButton->setEnabled(true);
+    ui->btInstall->setEnabled(true);
     qDebug() << imageFileName;
 }
 
@@ -421,12 +428,12 @@ void Installer::writeImageToDevice()
     }
 
     // Get the image file name of the version which the user want to install
-    QString selectedImage = imageNames.at(ui->releaseLinks->currentIndex());
+    QString selectedImage = imageNames.at(ui->cbVersion->currentIndex());
     setImageFileName(selectedImage);
 
     // Check if the user already downloaded the image
     if (!imageFile.exists()) {
-        QString selectedVersionName = ui->releaseLinks->itemText(ui->releaseLinks->currentIndex());
+        QString selectedVersionName = ui->cbVersion->itemText(ui->cbVersion->currentIndex());
         QMessageBox::StandardButton confirmDownload = QMessageBox::warning(this, tr("Download XBian?"),
                                                               selectedVersionName + " has not been downloaded yet,\n"
                                                               "Do you want to download it now?",
@@ -439,7 +446,7 @@ void Installer::writeImageToDevice()
         state = STATE_GETTING_URL;
         this->updateUI();
 
-        QString link = ui->releaseLinks->itemData(ui->releaseLinks->currentIndex()).toString();
+        QString link = ui->cbVersion->itemData(ui->cbVersion->currentIndex()).toString();
         // Try to find file name in url
         int idx = link.lastIndexOf('/');
         if (idx > 0) {
@@ -467,7 +474,7 @@ void Installer::writeImageToDevice()
     this->totalImageSize = this->getUncompressedImageSize();
 
     // TODO: make portable
-    QString destination = ui->removableDevicesComboBox->currentText();
+    QString destination = ui->cbSDcards->currentText();
 
     this->updateUI();
 
