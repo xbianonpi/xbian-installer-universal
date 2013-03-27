@@ -76,7 +76,7 @@ void Installer::refreshDeviceList()
     qDebug() << "Refreshing device list";
     this->devices = diskWriter->getRemovableDeviceNames();
     ui->cbSDcards->clear();
-    ui->cbSDcards->addItems(devices);
+    ui->cbSDcards->addItems(diskWriter->getUserFriendlyNamesRemovableDevices(devices));
     ui->cbSDcards->setCurrentIndex(ui->cbSDcards->count()-1);
 }
 
