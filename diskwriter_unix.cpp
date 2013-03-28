@@ -114,7 +114,6 @@ QStringList DiskWriter_unix::getRemovableDeviceNames()
 
     foreach (QString device, names)
     {
-        if (! checkIsMounted(device))
             unmounted << "/dev/"+device;
     }
 
