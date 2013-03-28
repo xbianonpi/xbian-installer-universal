@@ -114,7 +114,7 @@ QStringList DiskWriter_unix::getRemovableDeviceNames()
 
     foreach (QString device, names)
     {
-            unmounted << "/dev/"+device;
+        if (this->checkIfUSB(device)) unmounted << "/dev/"+device;
     }
 
     return unmounted;
@@ -173,8 +173,18 @@ QStringList DiskWriter_unix::getUserFriendlyNamesRemovableDevices(QStringList de
 
 bool DiskWriter_unix::checkIfUSB(QString device) {
 #ifdef Q_OS_LINUX
-    //TODO
-    return true;
+    QProcess lssize;
+    qDebug() << device;
+    lssize.start(QString("cat /sys/block/%1/removable").arg(device), QIODevice::ReadOnly);
+    lssize.waitForStarted();
+    lssize.waitForFinished();
+
+    QString s = lssize.readLine();
+    qDebug() << s;
+    if (s.toInt() == 1) return true;
+
+
+    return false;
 #else
     QProcess lssize;
     lssize.start(QString("diskutil info %1").arg(device), QIODevice::ReadOnly);
