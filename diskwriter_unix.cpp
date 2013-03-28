@@ -144,12 +144,25 @@ QStringList DiskWriter_unix::getRemovableDeviceNames()
 
 QStringList DiskWriter_unix::getUserFriendlyNamesRemovableDevices(QStringList devices) {
     QStringList returnList;
-
     for (int i = 0; i < devices.size(); i++) {
         QString s = devices.at(i);
 #ifdef Q_OS_LINUX
-        // TODO
-        returnList.append(s);
+        QProcess lsblk;
+        s.append("1");
+        lsblk.start(QString("blkid %1").arg(s), QIODevice::ReadOnly);
+        lsblk.waitForStarted();
+        lsblk.waitForFinished();
+        QString output = lsblk.readLine();
+        output = output.trimmed(); // Odd trailing whitespace
+        QString type;
+        if (output.contains("LABEL")) type = "LABEL";
+        else type = "UUID";
+
+        QProcess blkid;
+        blkid.start(QString("blkid -s %1 -o value %2").arg(type,s), QIODevice::ReadOnly);
+        blkid.waitForStarted();
+        blkid.waitForFinished();
+        returnList.append(blkid.readLine());
 #else
         QProcess lsblk;
         lsblk.start(QString("diskutil info %1s1").arg(s), QIODevice::ReadOnly);
@@ -174,16 +187,11 @@ QStringList DiskWriter_unix::getUserFriendlyNamesRemovableDevices(QStringList de
 bool DiskWriter_unix::checkIfUSB(QString device) {
 #ifdef Q_OS_LINUX
     QProcess lssize;
-    qDebug() << device;
     lssize.start(QString("cat /sys/block/%1/removable").arg(device), QIODevice::ReadOnly);
     lssize.waitForStarted();
     lssize.waitForFinished();
-
     QString s = lssize.readLine();
-    qDebug() << s;
     if (s.toInt() == 1) return true;
-
-
     return false;
 #else
     QProcess lssize;
