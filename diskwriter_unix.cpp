@@ -146,7 +146,8 @@ QStringList DiskWriter_unix::getRemovableDeviceNames()
 QStringList DiskWriter_unix::getUserFriendlyNamesRemovableDevices(QStringList devices) {
     QStringList returnList;
 
-    for (QString s : devices) {
+    for (int i = 0; i < devices.size(); i++) {
+        QString s = devices.at(i);
 #ifdef Q_OS_LINUX
         // TODO
         returnList.append(s);
