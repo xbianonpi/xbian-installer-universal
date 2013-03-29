@@ -49,6 +49,8 @@ Installer::Installer(QWidget *parent) :
     connect(ui->cbSDcards, SIGNAL(currentTextChanged(QString)), this, SLOT(updateUI()));
     connect(diskWriter, SIGNAL(bytesWritten(int)), this, SLOT(updateWriteProgress(int)));
     connect(ui->btAbout, SIGNAL(clicked()), this, SLOT(showAboutDialog()));
+    connect(ui->btRefresh, SIGNAL(clicked()), this, SLOT(refreshDeviceList()));
+
 
     isCancelled = false;
     xmlHandler *handler = new xmlHandler;

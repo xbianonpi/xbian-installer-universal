@@ -73,7 +73,7 @@
     <string>1. Select version</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="btInstall">
+  <widget class="QPushButton" name="btInstallk">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -135,7 +135,7 @@
     <rect>
      <x>10</x>
      <y>90</y>
-     <width>281</width>
+     <width>251</width>
      <height>20</height>
     </rect>
    </property>
@@ -149,7 +149,7 @@
   <widget class="QPushButton" name="btAbout">
    <property name="geometry">
     <rect>
-     <x>250</x>
+     <x>230</x>
      <y>0</y>
      <width>75</width>
      <height>21</height>
@@ -167,8 +167,30 @@
     <bool>true</bool>
    </property>
   </widget>
+  <widget class="QPushButton" name="btRefresh">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>90</y>
+     <width>21</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>sadf</string>
+   </property>
+   <property name="icon">
+    <iconset resource="rsc.qrc">
+     <normaloff>:/logo/refresh.png</normaloff>:/logo/refresh.png</iconset>
+   </property>
+   <property name="flat">
+    <bool>false</bool>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="rsc.qrc"/>
+ </resources>
  <connections/>
 </ui>
