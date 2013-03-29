@@ -22,6 +22,7 @@ DiskWriter_unix::~DiskWriter_unix()
 
 int DiskWriter_unix::open(QString device)
 {
+
 #ifdef Q_OS_MAC
     // Write to RAW device, this is MUCH faster
     device.replace("/dev/","/dev/r");
