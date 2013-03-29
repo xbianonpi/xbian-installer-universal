@@ -507,7 +507,8 @@ void Installer::writeImageToDevice()
     this->state = this->STATE_WRITING_IMAGE;
     if (diskWriter->open(destination) < 0) {
         qDebug() << "Failed to open output device";
-        //ui->messageBar->setText("Unable to open "+destination+". Are you root?");
+        QString message = QString("Failed to open %1, are you sure the SD cards hardware lock is off?").arg(destination);
+        QMessageBox::StandardButton success = QMessageBox::warning(this, tr("Error!"), message,QMessageBox::Ok);
         return;
     }
 
