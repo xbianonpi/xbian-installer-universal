@@ -479,7 +479,7 @@ void Installer::writeImageToDevice()
     this->updateUI();
 
     QMessageBox::StandardButton ok = QMessageBox::warning(this, tr("Are you sure?"),
-                                                          "Installing XBian to your SD card will delete all data on the selected SD card, continue?",
+                                                          "Installing XBian to your SD card will delete all data on the selected SD card. Would you like to continue?",
                                                           QMessageBox::Yes | QMessageBox::No,
                                                           QMessageBox::No);
 
