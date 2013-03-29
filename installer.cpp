@@ -49,8 +49,11 @@ Installer::Installer(QWidget *parent) :
     connect(ui->cbSDcards, SIGNAL(currentTextChanged(QString)), this, SLOT(updateUI()));
     connect(diskWriter, SIGNAL(bytesWritten(int)), this, SLOT(updateWriteProgress(int)));
     connect(ui->btAbout, SIGNAL(clicked()), this, SLOT(showAboutDialog()));
-    connect(ui->btRefresh, SIGNAL(clicked()), this, SLOT(refreshDeviceList()));
 
+    // Create timer that refreshes the device list every second
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(refreshDeviceList()));
+    timer->start(1000);
 
     isCancelled = false;
     xmlHandler *handler = new xmlHandler;
@@ -75,11 +78,14 @@ Installer::~Installer()
 
 void Installer::refreshDeviceList()
 {
-    qDebug() << "Refreshing device list";
-    this->devices = diskWriter->getRemovableDeviceNames();
-    ui->cbSDcards->clear();
-    ui->cbSDcards->addItems(diskWriter->getUserFriendlyNamesRemovableDevices(devices));
-    ui->cbSDcards->setCurrentIndex(ui->cbSDcards->count()-1);
+    QStringList newDevices = diskWriter->getRemovableDeviceNames();
+    if (newDevices != this->devices) {
+        qDebug() << "Refreshing device list";
+        this->devices = newDevices;
+        ui->cbSDcards->clear();
+        ui->cbSDcards->addItems(diskWriter->getUserFriendlyNamesRemovableDevices(devices));
+        ui->cbSDcards->setCurrentIndex(ui->cbSDcards->count()-1);
+    }
 }
 
 void Installer::cancel()
