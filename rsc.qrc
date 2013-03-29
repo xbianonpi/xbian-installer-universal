@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/logo">
         <file>icon.ico</file>
-        <file>cross.ico</file>
     </qresource>
 </RCC>
