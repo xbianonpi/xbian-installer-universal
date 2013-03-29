@@ -5,7 +5,7 @@
 int main(int argc, char *argv[])
 {
 
-#if defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX)
     // Check if this program is executed as root
     QProcess lsblk;
     lsblk.start(QString("whoami"), QIODevice::ReadOnly);
