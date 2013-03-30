@@ -428,9 +428,6 @@ void Installer::getImageFileNameFromUser()
 
 void Installer::writeImageToDevice()
 {
-    qDebug () << this->STATE_IDLE;
-    qDebug () << "Write image to device called";
-    qDebug () << this->state;
     // Check if there is some progress happening, if so this button is a cancel button
     if (this->state != this->STATE_IDLE) {
         this->cancel();
