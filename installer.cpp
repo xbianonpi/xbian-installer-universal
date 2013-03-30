@@ -353,7 +353,6 @@ void Installer::fileListReply(QNetworkReply *reply)
 {
 
     this->updateUI();
-    QByteArray replyData;
     if (isCancelled) {
         isCancelled = false;
         this->percentage = 0;
@@ -368,11 +367,6 @@ void Installer::fileListReply(QNetworkReply *reply)
         case STATE_GETTING_LINKS:
             if (responseCode == RESPONSE_OK && reply->isReadable()) {
                 parseAndSetLinks(reply->readAll());
-                QFile file("sf_data.xml");
-                if (file.open(QFile::WriteOnly)) {
-                    file.write(replyData);
-                    file.close();
-                }
             }
             qDebug () << "Setting state idle! l";
             this->state = STATE_IDLE;
@@ -479,7 +473,7 @@ void Installer::writeImageToDevice()
     this->updateUI();
 
     QMessageBox::StandardButton ok = QMessageBox::warning(this, tr("Are you sure?"),
-                                                          "Installing XBian to your SD card will delete all data on the selected SD card. Would you like to continue?",
+                                                          "Installing XBian to your SD card will delete all data on the selected SD card.\n\nWould you like to continue?",
                                                           QMessageBox::Yes | QMessageBox::No,
                                                           QMessageBox::No);
 
