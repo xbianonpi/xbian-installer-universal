@@ -250,7 +250,9 @@ unsigned int Installer::getUncompressedImageSize()
     unsigned char			bufSize[4];
     unsigned int			fileSize;
 
-    file = fopen(imageFileName.toStdString().c_str(), "rb");
+    QString location = qApp->applicationDirPath() + imageFileName;
+
+    file = fopen(location.toStdString().c_str(), "rb");
     if (file == NULL)
         return 0;
 
@@ -277,7 +279,7 @@ void Installer::setImageFileName(QString filename)
         return;
     }
     imageFileName = filename;
-    imageFile.setFileName(imageFileName);
+    imageFile.setFileName(qApp->applicationDirPath() + imageFileName);
 
     int idx = filename.lastIndexOf('/');
     if (idx > 0) {
@@ -518,7 +520,7 @@ void Installer::writeImageToDevice()
     }
 
 
-    if (!diskWriter->writeCompressedImageToRemovableDevice(ver.fileName)) {
+    if (!diskWriter->writeCompressedImageToRemovableDevice(qApp->applicationDirPath() + ver.fileName)) {
         qDebug() << "Writing failed";
         reset();
         return;
