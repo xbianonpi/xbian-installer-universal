@@ -64,14 +64,7 @@ Installer::Installer(QWidget *parent) :
 
     setImageFileName("");
 
-    QFile file("foo.xml");
-    if (file.open(QFile::ReadOnly)) {
-        QByteArray data = file.readAll();
-        parseAndSetLinks(data);
-    }
-    else {
-        updateLinks();
-    }
+    updateLinks();
 
 }
 
