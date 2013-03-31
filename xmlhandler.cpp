@@ -1,26 +1,58 @@
 #include "xmlhandler.h"
+#include <QXmlStreamAttributes>
 
-bool xmlHandler::startElement(const QString&, const QString &localName, const QString &, const QXmlAttributes &atts)
-{
-    if (localName == "link") {
-        QString link;
-        for (int i = 0; i < atts.count(); i++) {
-            if (atts.localName(i) == "href") {
-                link = atts.value(i);
-                int n = link.lastIndexOf("download");
-                if (n < 0) {
-                    return true;
+QList<version> xmlHandler::parseXML(QXmlStreamReader xml) {
+    QList<version> versions;
+
+    while (!xml.atEnd() && !xml.hasError()) {
+         QXmlStreamReader::TokenType token = xml.readNext();
+
+         if(token == QXmlStreamReader::StartDocument) continue;
+
+         if(token == QXmlStreamReader::StartElement) {
+            if(xml.name() == "entry") {
+                version v = this->parseVersion(xml);
+                if (v != NULL) {
+                    versions.append(v);
+                    xml.readNext();
                 }
-
-                link = link.remove(n-1, link.size());
             }
         }
-        if (link.contains("release") && link.endsWith("img.gz")) {
-            releaseLinks += link;
-        }
-        if (link.contains("autoupdate") && link.endsWith("tar.bz2")) {
-            upgradeLinks += link;
+    }
+}
+
+version xmlHandler::parseVersion (QXmlStreamReader& xml) {
+     QString downloadLink;
+     QString md5;
+
+     while(!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "entry")) {
+         if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+            if(xml.name() == "link") {
+                QXmlStreamAttributes atr = xml.attributes();
+
+                if (atr.hasAttribute("href")) {
+                    downloadLink = atr.value("href").toString();
+                    if (!downloadLink.contains("release") || !downloadLink.contains(".img.gz")) {
+                        downloadLink = "";
+                    }
+                }
+             }
+
+
+            if (xml.name() == "media:hash") {
+                md5 = xml.text();
+            }
         }
     }
-    return true;
+
+     qDebug() << downloadLink;
+     qDebug() << md5;
+
+     if (downloadLink == "" || md5 == "") {
+        version v(downloadLink, md5);
+        return v;
+     }
+
+     return NULL;
 }

@@ -13,7 +13,7 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     installer.cpp \
-    xmlhandler.cpp
+    version.cpp
 
 static { # everything below takes effect with CONFIG += static
     CONFIG += static
@@ -25,10 +25,10 @@ static { # everything below takes effect with CONFIG += static
 
 
 HEADERS  += installer.h \
-    xmlhandler.h \
     diskwriter.h \
     zlib.h \
-    zconf.h
+    zconf.h \
+    version.h
 
 win32 {
     SOURCES += diskwriter_windows.cpp

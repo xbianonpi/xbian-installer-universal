@@ -4,6 +4,10 @@
 #include <QDialog>
 #include <QtXml>
 #include <QNetworkAccessManager>
+#include <QList>
+#include <version.h>
+#include <QXmlStreamReader>
+
 
 class DiskWriter;
 
@@ -30,6 +34,8 @@ private:
     void extractByteOffsetsFromContentLength(qlonglong &first, qlonglong &last, qlonglong &total, QString s);
     void reset();
     void disableControls();
+    QList<version> parseXML(QXmlStreamReader& xml);
+    version parseVersion (QXmlStreamReader& xml);
 
     QByteArray rangeByteArray(qlonglong first, qlonglong last);
     QNetworkRequest createRequest(QUrl &url, qlonglong first, qlonglong last);
@@ -49,16 +55,17 @@ private:
         STATE_GETTING_LINKS,
         STATE_GETTING_URL,
         STATE_DOWNLOADING_IMAGE,
-        STATE_WRITING_IMAGE
+        STATE_WRITING_IMAGE,
+        STATE_VERIFYING
     } state;
 
     qlonglong bytesDownloaded;
     QString imageFileName;
-    QList<QString> imageNames;
     QStringList devices;
     QFile imageFile;
     QUrl downloadUrl;
     DiskWriter *diskWriter;
+    QList<version> versions;
     bool isCancelled;
     int percentage;
     long totalImageSize;

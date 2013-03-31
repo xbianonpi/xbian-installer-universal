@@ -1,6 +1,5 @@
 #include "installer.h"
 #include "ui_installer.h"
-#include "xmlhandler.h"
 
 #include <QString>
 #include <QFile>
@@ -20,6 +19,10 @@
 // TODO: Get chunk size from server, or whatever
 #define CHUNKSIZE 1*1024*1024
 #define installerVersion 0.1
+
+// Mirror information
+#define sourceForgeRSS "http://sourceforge.net/api/file/index/project-id/1428221/atom"
+#define md5file "https://downloads.sourceforge.net/project/xbian/release/MD5.txt?r=&ts=1364648856&use_mirror=switch"
 
 Installer::Installer(QWidget *parent) :
     QDialog(parent),
@@ -41,6 +44,7 @@ Installer::Installer(QWidget *parent) :
     diskWriter = new DiskWriter_unix(this);
 #endif
 
+
     refreshDeviceList();
 
     connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileListReply(QNetworkReply*)));
@@ -50,14 +54,13 @@ Installer::Installer(QWidget *parent) :
     connect(diskWriter, SIGNAL(bytesWritten(int)), this, SLOT(updateWriteProgress(int)));
     connect(ui->btAbout, SIGNAL(clicked()), this, SLOT(showAboutDialog()));
 
+
     // Create timer that refreshes the device list every second
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(refreshDeviceList()));
     timer->start(1000);
 
     isCancelled = false;
-    xmlHandler *handler = new xmlHandler;
-    xmlReader.setContentHandler(handler);
 
     setImageFileName("");
 
@@ -69,6 +72,7 @@ Installer::Installer(QWidget *parent) :
     else {
         updateLinks();
     }
+
 }
 
 Installer::~Installer()
@@ -114,6 +118,7 @@ void Installer::showAboutDialog() {
 
 void Installer::parseAndSetLinks(const QByteArray &data)
 {
+
     QXmlInputSource source;
     source.setData(data);
 
@@ -122,29 +127,15 @@ void Installer::parseAndSetLinks(const QByteArray &data)
         std::cout << "Parsing failed." << std::endl;
     }
 
-    xmlHandler *handler = dynamic_cast<xmlHandler*>(xmlReader.contentHandler());
-    if (handler == NULL) {
-        return;
-    }
+    QXmlStreamReader reader(data);
+    this->versions =  parseXML(reader);
+
 
     ui->cbVersion->clear();
-    // Clear the imagesnames list as we are refreshing the images
-    imageNames.clear();
 
-    foreach (QString link, handler->releaseLinks) {
-        QString version = link;
-        // Remove full url and ".img.gz"
-        int idx = link.lastIndexOf('/');
-        version.remove(0, idx+1);
-
-        // Add image file name to imagesnames list
-        imageNames.append(version);
-        qDebug() << version;
-
-        version.chop(7);
-
-        version.replace("_"," ");
-        ui->cbVersion->insertItem (0,version, link);
+    foreach (version v, versions) {
+        qDebug() << "lasjdfklasdjklfajslkf";
+        ui->cbVersion->addItem(v.name);
         ui->cbVersion->setCurrentIndex(0);
     }
 }
@@ -306,7 +297,7 @@ void Installer::updateLinks()
     state = STATE_GETTING_LINKS;
     this->updateUI();
 
-    QUrl url("http://sourceforge.net/api/file/index/project-id/1428221/atom");
+    QUrl url(sourceForgeRSS);
     manager.get(QNetworkRequest(url));
 }
 
@@ -351,7 +342,6 @@ void Installer::reset()
 
 void Installer::fileListReply(QNetworkReply *reply)
 {
-
     this->updateUI();
     if (isCancelled) {
         isCancelled = false;
@@ -436,8 +426,10 @@ void Installer::writeImageToDevice()
     }
 
     // Get the image file name of the version which the user want to install
-    QString selectedImage = imageNames.at(ui->cbVersion->currentIndex());
+    QString selectedImage = versions.at(ui->cbVersion->currentIndex()).fileName;
     setImageFileName(selectedImage);
+    version ver = versions.at(ui->cbVersion->currentIndex());
+
 
     // Check if the user already downloaded the image
     if (!imageFile.exists()) {
@@ -462,7 +454,8 @@ void Installer::writeImageToDevice()
             setImageFileName(newFileName.remove(0, idx+1));
         }
 
-        QUrl url(link + "/download");
+        QUrl url(ver.downloadLink + "/download");
+        qDebug() << url.toString();
         manager.get(createRequest(url, 0, CHUNKSIZE));
         return;
     }
@@ -474,7 +467,29 @@ void Installer::writeImageToDevice()
                                                           QMessageBox::Yes | QMessageBox::No,
                                                           QMessageBox::No);
 
+
     if (ok != QMessageBox::Yes) {
+        return;
+    }
+
+
+    // Check MD5
+    QFileInfo fileInfo(imageFile);
+    QString filename(fileInfo.absolutePath());
+    qDebug() << filename;
+
+
+    if (!ver.checkMD5(imageFile)) {
+        qDebug() << "MD5 check failed!";
+        QMessageBox::StandardButton verifyimage = QMessageBox::warning(this, tr("Warning!"),
+                                                              "The downloaded image was unsuccessfully verified. Do you want to delete the image and try downloading it again?",
+                                                              QMessageBox::Yes | QMessageBox::No,
+                                                              QMessageBox::No);
+        if (verifyimage == QMessageBox::Yes) {
+            imageFile.remove();
+            this->writeImageToDevice();
+        }
+
         return;
     }
 
@@ -495,6 +510,8 @@ void Installer::writeImageToDevice()
         imageFile.close();
     }
 
+
+
     this->state = this->STATE_WRITING_IMAGE;
     if (diskWriter->open(destination) < 0) {
         qDebug() << "Failed to open output device";
@@ -503,7 +520,8 @@ void Installer::writeImageToDevice()
         return;
     }
 
-    if (!diskWriter->writeCompressedImageToRemovableDevice(imageFileName)) {
+
+    if (!diskWriter->writeCompressedImageToRemovableDevice(ver.fileName)) {
         qDebug() << "Writing failed";
         reset();
         return;
@@ -517,4 +535,71 @@ void Installer::writeImageToDevice()
         this->updateUI();
         qDebug() << "Writing done!";
     }
+}
+
+QList<version> Installer::parseXML(QXmlStreamReader& xml) {
+    QList<version> vers;
+    qDebug() << "parsexml";
+    while (!xml.atEnd() && !xml.hasError()) {
+         QXmlStreamReader::TokenType token = xml.readNext();
+
+         if(token == QXmlStreamReader::StartDocument) continue;
+
+         if(token == QXmlStreamReader::StartElement) {
+            if(xml.name() == "entry") {
+                version v = this->parseVersion(xml);
+                if (v.downloadLink != "") {
+                    vers.append(v);
+
+                }
+
+
+            }
+        }
+
+    }
+
+    xml.clear();
+    return vers;
+}
+
+version Installer::parseVersion (QXmlStreamReader& xml) {
+     QString downloadLink;
+     QString md5;
+
+
+     while(!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "entry")) {
+         xml.readNext();
+         if(xml.tokenType() == QXmlStreamReader::StartElement) {
+            if(xml.name() == "link") {
+                QXmlStreamAttributes atr = xml.attributes();
+
+                if (atr.hasAttribute("href")) {
+                    downloadLink = atr.value("href").toString();
+                    if (!downloadLink.contains("release") || !downloadLink.contains(".img.gz")) {
+                        downloadLink = "";
+                    }
+                }
+             }
+
+
+            if (xml.name() == "hash") {
+                xml.readNext();
+                md5 = xml.text().toString();
+            }
+        }
+    }
+
+
+
+     if (downloadLink != "" && md5 != "") {
+        version v(downloadLink, md5);
+        qDebug() << v.downloadLink;
+        qDebug() << v.fileName;
+        qDebug() << v.name;
+        return v;
+     }
+
+      version v("","");
+      return v;
 }
