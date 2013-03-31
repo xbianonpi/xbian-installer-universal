@@ -135,7 +135,7 @@ void Installer::parseAndSetLinks(const QByteArray &data)
 
     foreach (version v, versions) {
         qDebug() << "lasjdfklasdjklfajslkf";
-        ui->cbVersion->addItem(v.name);
+        ui->cbVersion->insertItem(0, v.name);
         ui->cbVersion->setCurrentIndex(0);
     }
 }
