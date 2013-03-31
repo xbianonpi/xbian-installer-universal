@@ -429,6 +429,10 @@ void Installer::writeImageToDevice()
     setImageFileName(selectedImage);
     version ver = versions.at(ui->cbVersion->currentIndex());
 
+    if (this->imageFile.isOpen()) {
+        imageFile.close();
+    }
+
 
     // Check if the user already downloaded the image
     if (!imageFile.exists()) {
