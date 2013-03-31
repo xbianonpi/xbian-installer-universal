@@ -132,9 +132,10 @@ void Installer::parseAndSetLinks(const QByteArray &data)
 
 
     ui->cbVersion->clear();
+    for(int k = 0; k < (versions.size()/2); k++) versions.swap(k,versions.size()-(1+k));
 
     foreach (version v, versions) {
-        ui->cbVersion->insertItem(0, v.name);
+        ui->cbVersion->addItem(v.name);
         ui->cbVersion->setCurrentIndex(0);
     }
 }
