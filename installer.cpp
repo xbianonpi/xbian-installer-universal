@@ -18,7 +18,7 @@
 
 // TODO: Get chunk size from server, or whatever
 #define CHUNKSIZE 1*1024*1024
-#define installerVersion 0.1
+#define installerVersion 0.2
 
 // Mirror information
 #define sourceForgeRSS "http://sourceforge.net/api/file/index/project-id/1428221/atom"
