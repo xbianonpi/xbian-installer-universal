@@ -277,7 +277,7 @@ void Installer::setImageFileName(QString filename)
         return;
     }
     imageFileName = filename;
-    imageFile.setFileName(imageFileName);
+    imageFile.setFileName(qApp->applicationDirPath() + imageFileName);
 
     int idx = filename.lastIndexOf('/');
     if (idx > 0) {
