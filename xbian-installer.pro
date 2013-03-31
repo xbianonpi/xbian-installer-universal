@@ -13,7 +13,9 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     installer.cpp \
-    version.cpp
+    version.cpp \
+    wnetwork.cpp \
+    setup.cpp
 
 static { # everything below takes effect with CONFIG += static
     CONFIG += static
@@ -28,7 +30,9 @@ HEADERS  += installer.h \
     diskwriter.h \
     zlib.h \
     zconf.h \
-    version.h
+    version.h \
+    wnetwork.h \
+    setup.h
 
 win32 {
     SOURCES += diskwriter_windows.cpp
@@ -41,7 +45,8 @@ unix {
     HEADERS += diskwriter_unix.h
 }
 
-FORMS    += installer.ui
+FORMS    += installer.ui \
+    setup.ui
 
 LIBS += -L3rd-party -lz
 
