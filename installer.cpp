@@ -22,7 +22,6 @@
 
 // Mirror information
 #define sourceForgeRSS "http://sourceforge.net/api/file/index/project-id/1428221/atom"
-#define md5file "https://downloads.sourceforge.net/project/xbian/release/MD5.txt?r=&ts=1364648856&use_mirror=switch"
 
 Installer::Installer(QWidget *parent) :
     QDialog(parent),
@@ -93,13 +92,10 @@ void Installer::cancel()
     if (state == STATE_WRITING_IMAGE)
         diskWriter->cancelWrite();
 
-    qDebug () << "Setting state idle! k";
     this->state = STATE_IDLE;
 }
 
 void Installer::updateWriteProgress(int i) {
-    qDebug() << "Total image size:" << this->totalImageSize;
-    qDebug() << "Written: " << i;
     this->percentage = (qreal)i/this->totalImageSize * 100;
     this->updateUI();
 }
@@ -111,7 +107,6 @@ void Installer::showAboutDialog() {
 
 void Installer::parseAndSetLinks(const QByteArray &data)
 {
-
     QXmlInputSource source;
     source.setData(data);
 
@@ -156,8 +151,6 @@ void Installer::saveAndUpdateProgress(QNetworkReply *reply)
     // Update progress bar
     this->percentage = (qreal)bytesDownloaded/total * 100;
     this->updateUI();
-    qDebug() << bytesDownloaded << "/" << total << "=" << (qreal)bytesDownloaded/total * 100 << "%";
-    qDebug() << this->state;
     if (this->percentage == 100) {
         // Done!
         this->state = STATE_IDLE;
@@ -266,7 +259,6 @@ unsigned int Installer::getUncompressedImageSize()
     }
 
     fileSize = (unsigned int) ((bufSize[3] << 24) | (bufSize[2] << 16) | (bufSize[1] << 8) | bufSize[0]);
-    qDebug() << "Uncompressed FileSize:" << fileSize;
 
     fclose(file);
     return fileSize;
@@ -275,7 +267,6 @@ unsigned int Installer::getUncompressedImageSize()
 void Installer::setImageFileName(QString filename)
 {
     if (imageFile.isOpen()) {
-        qDebug() << "Tried to change filename while imageFile was open!";
         return;
     }
     imageFileName = filename;
@@ -293,7 +284,10 @@ void Installer::updateLinks()
     this->updateUI();
 
     QUrl url(sourceForgeRSS);
-    manager.get(QNetworkRequest(url));
+    QNetworkRequest req = QNetworkRequest(url);
+    req.setAttribute(QNetworkRequest::HttpPipeliningAllowedAttribute, true);
+    req.setRawHeader("User-Agent", "Wget/1.14 (linux-gnu)");
+    manager.get(req);
 }
 
 void Installer::downloadImage(QNetworkReply *reply)
@@ -324,7 +318,6 @@ void Installer::downloadImage(QNetworkReply *reply)
 
 void Installer::reset()
 {
-    qDebug () << "Setting state idle! j";
     state = STATE_IDLE;
     bytesDownloaded = 0;
     if (imageFile.isOpen()) {
@@ -343,8 +336,11 @@ void Installer::fileListReply(QNetworkReply *reply)
         this->percentage = 0;
     }
 
+
+    qDebug() <<  reply->errorString();
     if(reply->error() == QNetworkReply::NoError)
     {
+        qDebug() << "no error";
         QUrl redirectionUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
         int responseCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toUInt();
 
@@ -353,7 +349,6 @@ void Installer::fileListReply(QNetworkReply *reply)
             if (responseCode == RESPONSE_OK && reply->isReadable()) {
                 parseAndSetLinks(reply->readAll());
             }
-            qDebug () << "Setting state idle! l";
             this->state = STATE_IDLE;
             this->updateUI();
             reset();
@@ -408,7 +403,6 @@ void Installer::getImageFileNameFromUser()
     }
     setImageFileName(filename);
     ui->btInstall->setEnabled(true);
-    qDebug() << imageFileName;
 }
 
 void Installer::writeImageToDevice()
@@ -537,25 +531,30 @@ void Installer::writeImageToDevice()
 }
 
 QList<version> Installer::parseXML(QXmlStreamReader& xml) {
+
     QList<version> vers;
-    qDebug() << "parsexml";
     while (!xml.atEnd() && !xml.hasError()) {
-         QXmlStreamReader::TokenType token = xml.readNext();
+        QXmlStreamReader::TokenType token = xml.readNext();
+        /* If token is just StartDocument, we'll go to next.*/
+        if(token == QXmlStreamReader::StartDocument) {
+            continue;
+        }
 
-         if(token == QXmlStreamReader::StartDocument) continue;
+        /* If token is StartElement, we'll see if we can read it.*/
+        if(token == QXmlStreamReader::StartElement) {
+            /* If it's named persons, we'll go to the next.*/
+            if(xml.name() == "feed") {
+               continue;
+            }
 
-         if(token == QXmlStreamReader::StartElement) {
+            /* If it's named person, we'll dig the information from there.*/
             if(xml.name() == "entry") {
                 version v = this->parseVersion(xml);
                 if (v.downloadLink != "") {
                     vers.append(v);
-
-                }
-
-
             }
         }
-
+        }
     }
 
     xml.clear();
