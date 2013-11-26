@@ -1,6 +1,6 @@
 #include "diskwriter_windows.h"
 
-#include "zlib.h"
+#include <QtZlib/zlib.h>
 
 #include <QDebug>
 #include <QApplication>

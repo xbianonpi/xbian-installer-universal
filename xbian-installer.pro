@@ -13,42 +13,24 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     installer.cpp \
-    version.cpp \
-    wnetwork.cpp \
-    setup.cpp
-
-static { # everything below takes effect with CONFIG += static
-    CONFIG += static
-    CONFIG += staticlib # this is needed if you create a static library, not a static executable
-    DEFINES += STATIC
-    message("~~~ static build ~~~") # this is for information, that the static build is done
-}
-
-
+    version.cpp
 
 HEADERS  += installer.h \
     diskwriter.h \
-    zlib.h \
-    zconf.h \
-    version.h \
-    wnetwork.h \
-    setup.h
+    version.h
 
 win32 {
     SOURCES += diskwriter_windows.cpp
     HEADERS += diskwriter_windows.h
-    CONFIG += rtti
-    QMAKE_LFLAGS  = -static -static-libgcc
+    CONFIG += rtti static
 }
 unix {
     SOURCES += diskwriter_unix.cpp
     HEADERS += diskwriter_unix.h
 }
 
-FORMS    += installer.ui \
-    setup.ui
 
-LIBS += -L3rd-party -lz
+FORMS    += installer.ui
 
 OTHER_FILES += \
     app.rc

@@ -5,7 +5,7 @@
 #include <QtXml>
 #include <QNetworkAccessManager>
 #include <QList>
-#include <version.h>
+#include "version.h"
 #include <QXmlStreamReader>
 
 
