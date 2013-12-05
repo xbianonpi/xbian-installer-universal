@@ -8,7 +8,6 @@
 #include <QTextStream>
 
 #if defined(Q_OS_LINUX)
-#include <blkid/blkid.h>
 #include "QtZlib/zlib.h"
 #else
 #include "zlib.h"
@@ -154,20 +153,14 @@ QStringList DiskWriter_unix::getUserFriendlyNamesRemovableDevices(QStringList de
 
         foreach (QString s, devices) {
     #ifdef Q_OS_LINUX
-            quint64 size = driveSize(s);
-            QStringList partInfo = getPartitionsInfo(s);
-
-            QTextStream friendlyName(&s);
-            friendlyName.setRealNumberNotation(QTextStream::FixedNotation);
-            friendlyName.setRealNumberPrecision(2);
-            friendlyName << " (";
-            friendlyName << size/(1024*1024*1024.0) << " GB, partitions: ";
-            foreach (QString partition, partInfo) {
-                friendlyName << partition << ", ";
-            }
-            s.chop(2);
-            friendlyName << ")";
-
+            QProcess* process = new QProcess();
+            process->start("fdisk -l | grep " + s);
+            process->waitForFinished();
+            QString output =  process->readAll();
+            output = output.split(",")[0];
+            output = output.replace("Disk " + s + ": ","");
+            output = output.replace("\n","");
+            s += " (" + output + ")";
             returnList.append(s);
     #else
             QProcess lsblk;
@@ -282,57 +275,3 @@ QStringList DiskWriter_unix::getDeviceNamesFromSysfs()
 
     return names;
 }
-
-#if defined(Q_OS_LINUX)
-quint64 DiskWriter_unix::driveSize(const QString& device) const
-{
-    blkid_probe pr;
-
-    pr = blkid_new_probe_from_filename(qPrintable(device));
-    if (!pr) {
-        return -1;
-    }
-
-    blkid_loff_t size = blkid_probe_get_size(pr);
-    blkid_free_probe(pr);
-    return size;
-}
-
-QStringList DiskWriter_unix::getPartitionsInfo(const QString& device) const
-{
-    blkid_probe pr;
-    blkid_partlist ls;
-    int nparts, i;
-    QStringList partList;
-
-    pr = blkid_new_probe_from_filename(qPrintable(device));
-    if (!pr) {
-        return partList;
-    }
-
-    ls = blkid_probe_get_partitions(pr);
-    if (ls == NULL) {
-        blkid_free_probe(pr);
-        return partList;
-    }
-
-    nparts = blkid_partlist_numof_partitions(ls);
-    if (nparts < 0) {
-        blkid_free_probe(pr);
-        return partList;
-    }
-
-    for (i = 0; i < nparts; i++) {
-         blkid_partition par = blkid_partlist_get_partition(ls, i);
-         QString partition;
-         QTextStream stream(&partition);
-         stream << "#" << blkid_partition_get_partno(par) << " - ";
-         stream << " " << blkid_partition_get_size(par)*512/(1024*1024.0) << "MB";
-
-         partList << partition;
-    }
-
-    blkid_free_probe(pr);
-    return partList;
-}
-#endif

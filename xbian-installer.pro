@@ -37,10 +37,6 @@ macx {
 
 FORMS    += installer.ui
 
-linux* {
-    LIBS += -lblkid
-}
-
 OTHER_FILES += \
     app.rc
 
