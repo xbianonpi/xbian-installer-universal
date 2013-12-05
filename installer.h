@@ -79,7 +79,6 @@ private slots:
     void writeImageToDevice();
     void updateUI();
     void updateWriteProgress(int i);
-    void showAboutDialog();
 };
 
 #endif // INSTALLER_H

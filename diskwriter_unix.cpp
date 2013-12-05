@@ -1,8 +1,7 @@
 #include "diskwriter_unix.h"
 
-#include <QtZlib/zlib.h>
+#include "zlib.h"
 
-#include <QDebug>
 #include <QApplication>
 #include <QDir>
 #include <QProcess>
@@ -35,7 +34,6 @@ int DiskWriter_unix::open(QString device)
     unmount.start("diskutil unmountDisk "+device, QIODevice::ReadOnly);
     unmount.waitForStarted();
     unmount.waitForFinished();
-    qDebug() << unmount.readAll();
 #endif
 
     if (!dev.open(QFile::WriteOnly)) {
@@ -67,19 +65,16 @@ bool DiskWriter_unix::writeCompressedImageToRemovableDevice(const QString &filen
     char buf[512*1024];
 
     if (!dev.isOpen()) {
-        qDebug() << "Device not ready or whatever";
         return false;
     }
 
     // Open source
     gzFile src = gzopen(filename.toStdString().c_str(), "rb");
     if (src == NULL) {
-        qDebug() << "Couldn't open file:" << filename;
         return false;
     }
 
     if (gzbuffer(src, 128*1024) != 0) {
-        qDebug() << "Failed to set buffer size";
         gzclose_r(src);
         return false;
     }
@@ -89,7 +84,6 @@ bool DiskWriter_unix::writeCompressedImageToRemovableDevice(const QString &filen
         // TODO: Sanity check
         ok = dev.write(buf, r);
         if (!ok) {
-            qDebug() << "Error writing";
             return false;
         }
         emit bytesWritten(gztell(src));
@@ -100,7 +94,6 @@ bool DiskWriter_unix::writeCompressedImageToRemovableDevice(const QString &filen
     isCancelled = false;
     if (r < 0) {
         gzclose_r(src);
-        qDebug() << "Error reading file!";
         return false;
     }
 
@@ -150,44 +143,60 @@ QStringList DiskWriter_unix::getRemovableDeviceNames()
 
 QStringList DiskWriter_unix::getUserFriendlyNamesRemovableDevices(QStringList devices) {
     QStringList returnList;
-    for (int i = 0; i < devices.size(); i++) {
-        QString s = devices.at(i);
-#ifdef Q_OS_LINUX
-        QProcess lsblk;
-        s.append("1");
-        lsblk.start(QString("blkid %1").arg(s), QIODevice::ReadOnly);
-        lsblk.waitForStarted();
-        lsblk.waitForFinished();
-        QString output = lsblk.readLine();
-        output = output.trimmed(); // Odd trailing whitespace
-        QString type;
-        if (output.contains("LABEL")) type = "LABEL";
-        else type = "UUID";
 
-        QProcess blkid;
-        blkid.start(QString("blkid -s %1 -o value %2").arg(type,s), QIODevice::ReadOnly);
-        blkid.waitForStarted();
-        blkid.waitForFinished();
-        returnList.append(blkid.readLine());
-#else
-        QProcess lsblk;
-        lsblk.start(QString("diskutil info %1s1").arg(s), QIODevice::ReadOnly);
-        lsblk.waitForStarted();
-        lsblk.waitForFinished();
+        foreach (QString s, devices) {
+    #ifdef Q_OS_LINUX
+            quint64 size = driveSize(s);
+            QStringList partInfo = getPartitionsInfo(s);
 
-        QString output = lsblk.readLine();
-        while (!lsblk.atEnd()) {
-            output = output.trimmed(); // Odd trailing whitespace
-            if (output.contains("Volume Name:")) { // We want the volume name of this device
-                output.replace("Volume Name:              ","");
-                returnList.append(output);
+            QTextStream friendlyName(&s);
+            friendlyName.setRealNumberNotation(QTextStream::FixedNotation);
+            friendlyName.setRealNumberPrecision(2);
+            friendlyName << " (";
+            friendlyName << size/(1024*1024*1024.0) << " GB, partitions: ";
+            foreach (QString partition, partInfo) {
+                friendlyName << partition << ", ";
             }
-            output = lsblk.readLine();
-        }
-#endif
-    }
+            s.chop(2);
+            friendlyName << ")";
 
-    return returnList;
+            returnList.append(s);
+    #else
+            QProcess lsblk;
+            lsblk.start(QString("diskutil info %1").arg(s), QIODevice::ReadOnly);
+            lsblk.waitForStarted();
+            lsblk.waitForFinished();
+
+            QString output = lsblk.readLine();
+            QStringList iddata;
+            QString item = "";
+            while (!lsblk.atEnd()) {
+                output = output.trimmed(); // Odd trailing whitespace
+                if (output.contains("Device / Media Name:")) { // We want the volume name of this device
+                    output.replace("Device / Media Name:      ","");
+                    iddata.append(output);
+                }else if (output.contains("Device Identifier:")) { // We want the volume name of this device
+                    output.replace("Device Identifier:        ","");
+                    iddata.append(output);
+                }else if (output.contains("Total Size:")) { // We want the volume name of this device
+                     output.replace("Total Size:               ","");
+                     QStringList tokens = output.split(" ");
+                     iddata.append( "("+tokens[0]+tokens[1]+")");
+                }
+
+                output = lsblk.readLine();
+            }
+
+            foreach(QString each,iddata)
+            {
+                item += each+" ";
+            }
+
+            returnList.append(item);
+    #endif
+        }
+
+        return returnList;
 }
 
 bool DiskWriter_unix::checkIfUSB(QString device) {

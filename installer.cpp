@@ -51,7 +51,6 @@ Installer::Installer(QWidget *parent) :
     connect(ui->cbVersion, SIGNAL(currentTextChanged(QString)), this, SLOT(updateUI()));
     connect(ui->cbSDcards, SIGNAL(currentTextChanged(QString)), this, SLOT(updateUI()));
     connect(diskWriter, SIGNAL(bytesWritten(int)), this, SLOT(updateWriteProgress(int)));
-    connect(ui->btAbout, SIGNAL(clicked()), this, SLOT(showAboutDialog()));
 
 
     // Create timer that refreshes the device list every second
@@ -62,8 +61,9 @@ Installer::Installer(QWidget *parent) :
     isCancelled = false;
 
     setImageFileName("");
-
     updateLinks();
+
+    ui->labelVersion->setText("Version 1.0");
 
 }
 
@@ -76,7 +76,6 @@ void Installer::refreshDeviceList()
 {
     QStringList newDevices = diskWriter->getRemovableDeviceNames();
     if (newDevices != this->devices) {
-        qDebug() << "Refreshing device list";
         this->devices = newDevices;
         ui->cbSDcards->clear();
         ui->cbSDcards->addItems(diskWriter->getUserFriendlyNamesRemovableDevices(devices));
@@ -98,11 +97,6 @@ void Installer::cancel()
 void Installer::updateWriteProgress(int i) {
     this->percentage = (qreal)i/this->totalImageSize * 100;
     this->updateUI();
-}
-
-void Installer::showAboutDialog() {
-    QString text = QString("Version %1\nBy Koenkk\nMade possible by Rasplex!").arg(installerVersion);
-    QMessageBox::about(this, "About",text);
 }
 
 void Installer::parseAndSetLinks(const QByteArray &data)
@@ -227,7 +221,6 @@ QNetworkRequest Installer::createRequest(QUrl &url, qlonglong first, qlonglong l
 {
     QNetworkRequest req(url);
     QByteArray range = rangeByteArray(first, last);
-    qDebug() << range;
     req.setAttribute(QNetworkRequest::HttpPipeliningAllowedAttribute, true);
     req.setRawHeader("Range", range);
     req.setRawHeader("User-Agent", "Wget/1.14 (linux-gnu)");
@@ -302,7 +295,6 @@ void Installer::downloadImage(QNetworkReply *reply)
     extractByteOffsetsFromContentLength(first, last, total, QString(contentRange));
 
     // This is the first valid packet, save it!
-    qDebug() << "Final url:" << downloadUrl << total;
     if (!imageFile.isOpen() && !imageFile.open(QFile::ReadWrite)) {
         return;
     }
@@ -337,10 +329,8 @@ void Installer::fileListReply(QNetworkReply *reply)
     }
 
 
-    qDebug() <<  reply->errorString();
     if(reply->error() == QNetworkReply::NoError)
     {
-        qDebug() << "no error";
         QUrl redirectionUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
         int responseCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toUInt();
 
@@ -360,7 +350,7 @@ void Installer::fileListReply(QNetworkReply *reply)
                 QNetworkRequest request = reply->request();
                 request.setUrl(redirectionUrl);
                 manager.get(request);
-                qDebug() << "Redirected to:" << redirectionUrl;
+
                 break;
             }
 
@@ -377,13 +367,11 @@ void Installer::fileListReply(QNetworkReply *reply)
             case RESPONSE_OK:
                 // Probably a small file
                 imageFile.write(reply->readAll());
-                qDebug() << "Respone OK";
                 break;
             case RESPONSE_PARTIAL:
                 saveAndUpdateProgress(reply);
                 break;
             default:
-                qDebug() << "Unhandled reply:" << responseCode;
                 break;
             }
             break; // downloading image
@@ -448,7 +436,6 @@ void Installer::writeImageToDevice()
         }
 
         QUrl url(ver.downloadLink + "/download");
-        qDebug() << url.toString();
         manager.get(createRequest(url, 0, CHUNKSIZE));
         return;
     }
@@ -469,11 +456,9 @@ void Installer::writeImageToDevice()
     // Check MD5
     QFileInfo fileInfo(imageFile);
     QString filename(fileInfo.absolutePath());
-    qDebug() << filename;
 
 
     if (!ver.checkMD5(imageFile)) {
-        qDebug() << "MD5 check failed!";
         QMessageBox::StandardButton verifyimage = QMessageBox::warning(this, tr("Warning!"),
                                                               "The downloaded image was unsuccessfully verified. Do you want to delete the image and try downloading it again?",
                                                               QMessageBox::Yes | QMessageBox::No,
@@ -507,26 +492,22 @@ void Installer::writeImageToDevice()
 
     this->state = this->STATE_WRITING_IMAGE;
     if (diskWriter->open(destination) < 0) {
-        qDebug() << "Failed to open output device";
         QString message = QString("Failed to open %1, are you sure the SD cards hardware lock is off?").arg(destination);
-        QMessageBox::StandardButton success = QMessageBox::warning(this, tr("Error!"), message,QMessageBox::Ok);
+        QMessageBox::warning(this, tr("Error!"), message,QMessageBox::Ok);
         return;
     }
 
 
     if (!diskWriter->writeCompressedImageToRemovableDevice(qApp->applicationDirPath() + ver.fileName)) {
-        qDebug() << "Writing failed";
         reset();
         return;
     }
 
     if (!isCancelled) {
         QString message = "XBian has been succesfully installed on your SD card, you can now plug your SD card into your Raspberry Pi";
-        QMessageBox::StandardButton success = QMessageBox::warning(this, tr("Installation succesfull!"), message,QMessageBox::Ok);
-        qDebug () << "Setting state idle! m ";
+        QMessageBox::warning(this, tr("Installation succesfull!"), message,QMessageBox::Ok);
         this->state = this->STATE_IDLE;
         this->updateUI();
-        qDebug() << "Writing done!";
     }
 }
 
@@ -592,9 +573,6 @@ version Installer::parseVersion (QXmlStreamReader& xml) {
 
      if (downloadLink != "" && md5 != "") {
         version v(downloadLink, md5);
-        qDebug() << v.downloadLink;
-        qDebug() << v.fileName;
-        qDebug() << v.name;
         return v;
      }
 

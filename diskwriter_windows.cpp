@@ -1,8 +1,6 @@
 #include "diskwriter_windows.h"
 
 #include <QtZlib/zlib.h>
-
-#include <QDebug>
 #include <QApplication>
 #include <QMessageBox>
 
@@ -86,19 +84,16 @@ bool DiskWriter_windows::writeCompressedImageToRemovableDevice(const QString &fi
     char buf[512*1024];
 
     if (!isOpen()) {
-        qDebug() << "Device not ready or whatever";
         return false;
     }
 
     // Open source
     gzFile src = gzopen(filename.toStdString().c_str(), "rb");
     if (src == NULL) {
-        qDebug() << "Couldn't open file:" << filename;
         return false;
     }
 
     if (gzbuffer(src, 128*1024) != 0) {
-        qDebug() << "Failed to set buffer size";
         gzclose_r(src);
         return false;
     }
@@ -115,7 +110,6 @@ bool DiskWriter_windows::writeCompressedImageToRemovableDevice(const QString &fi
                                   QObject::tr("An error occurred when attempting to write data to handle.\n"
                                               "Error %1: %2").arg(GetLastError()).arg(errText));
             LocalFree(errormessage);
-            qDebug() << r << byteswritten;
             close();
             return false;
         }
@@ -126,7 +120,6 @@ bool DiskWriter_windows::writeCompressedImageToRemovableDevice(const QString &fi
     isCancelled = false;
 
     if (r < 0) {
-        qDebug() << "Error reading file!";
         gzclose_r(src);
         return false;
     }
@@ -178,7 +171,6 @@ HANDLE DiskWriter_windows::getHandleOnDevice(int device, DWORD access)
 {
     HANDLE hDevice;
     QString devicename = QString("\\\\.\\PhysicalDrive%1").arg(device);
-    qDebug() << devicename;
     hDevice = CreateFile(devicename.toStdWString().c_str(), access, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
     if (hDevice == INVALID_HANDLE_VALUE)
     {
@@ -198,7 +190,6 @@ HANDLE DiskWriter_windows::getHandleOnVolume(const QString &volume, DWORD access
 {
     HANDLE hVolume;
     QString volumename = "\\\\.\\" + volume;
-    qDebug() << volumename;
     hVolume = CreateFile(volumename.toStdWString().c_str(), access, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
     if (hVolume == INVALID_HANDLE_VALUE)
     {

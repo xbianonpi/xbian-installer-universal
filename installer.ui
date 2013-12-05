@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>307</width>
-    <height>179</height>
+    <height>172</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -73,7 +73,7 @@
     <string>1. Select version</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="btInstallk">
+  <widget class="QPushButton" name="btInstall">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -135,7 +135,7 @@
     <rect>
      <x>10</x>
      <y>90</y>
-     <width>251</width>
+     <width>281</width>
      <height>20</height>
     </rect>
    </property>
@@ -146,51 +146,27 @@
     </font>
    </property>
   </widget>
-  <widget class="QPushButton" name="btAbout">
+  <widget class="QLabel" name="labelVersion">
    <property name="geometry">
     <rect>
-     <x>230</x>
+     <x>240</x>
      <y>0</y>
-     <width>75</width>
-     <height>21</height>
+     <width>81</width>
+     <height>19</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <underline>true</underline>
+     <family>Geeza Pro</family>
+     <pointsize>10</pointsize>
     </font>
    </property>
    <property name="text">
-    <string>About</string>
-   </property>
-   <property name="flat">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btRefresh">
-   <property name="geometry">
-    <rect>
-     <x>260</x>
-     <y>90</y>
-     <width>21</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>sadf</string>
-   </property>
-   <property name="icon">
-    <iconset resource="rsc.qrc">
-     <normaloff>:/logo/refresh.png</normaloff>:/logo/refresh.png</iconset>
-   </property>
-   <property name="flat">
-    <bool>false</bool>
+    <string>Version 1.0</string>
    </property>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="rsc.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

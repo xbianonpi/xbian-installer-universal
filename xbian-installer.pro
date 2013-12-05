@@ -4,9 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml network
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += core gui xml network widgets
 
 TARGET = XBian-installer
 TEMPLATE = app
@@ -26,9 +24,11 @@ win32 {
 }
 unix {
     SOURCES += diskwriter_unix.cpp
-    HEADERS += diskwriter_unix.h
+    HEADERS += diskwriter_unix.h \
+        zlib.h \
+        zconf.h
+    LIBS += -lz
 }
-
 
 FORMS    += installer.ui
 
