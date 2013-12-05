@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/logo">
         <file>icon.ico</file>
-        <file>refresh.png</file>
     </qresource>
 </RCC>
