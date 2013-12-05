@@ -20,17 +20,26 @@ HEADERS  += installer.h \
 win32 {
     SOURCES += diskwriter_windows.cpp
     HEADERS += diskwriter_windows.h
-    CONFIG += rtti static
+    CONFIG += rtti
+    QMAKE_LFLAGS  = -static -static-libgcc
 }
 unix {
     SOURCES += diskwriter_unix.cpp
     HEADERS += diskwriter_unix.h \
         zlib.h \
         zconf.h
+}
+
+macx {
     LIBS += -lz
 }
 
+
 FORMS    += installer.ui
+
+linux* {
+    LIBS += -lblkid
+}
 
 OTHER_FILES += \
     app.rc

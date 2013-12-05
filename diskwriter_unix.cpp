@@ -1,10 +1,18 @@
 #include "diskwriter_unix.h"
 
-#include "zlib.h"
+#include <QDebug>
 
 #include <QApplication>
 #include <QDir>
 #include <QProcess>
+#include <QTextStream>
+
+#if defined(Q_OS_LINUX)
+#include <blkid/blkid.h>
+#include "QtZlib/zlib.h"
+#else
+#include "zlib.h"
+#endif
 
 DiskWriter_unix::DiskWriter_unix(QObject *parent) :
     DiskWriter(parent)
@@ -210,19 +218,19 @@ bool DiskWriter_unix::checkIfUSB(QString device) {
     return false;
 #else
     QProcess lssize;
-    lssize.start(QString("diskutil info %1").arg(device), QIODevice::ReadOnly);
-    lssize.waitForStarted();
-    lssize.waitForFinished();
+        lssize.start(QString("diskutil info %1").arg(device), QIODevice::ReadOnly);
+        lssize.waitForStarted();
+        lssize.waitForFinished();
 
-    QString s = lssize.readLine();
-    while (!lssize.atEnd()) {
-         if (s.contains("Protocol:") && s.contains("USB")) {
-             return true;
-         }
-         s = lssize.readLine();
-    }
+        QString s = lssize.readLine();
+        while (!lssize.atEnd()) {
+             if (s.contains("Protocol:") && ( s.contains("USB") || s.contains("Secure Digital"))) {
+                 return true;
+             }
+             s = lssize.readLine();
+        }
 
-    return false;
+        return false;
 #endif
 }
 
@@ -260,9 +268,71 @@ QStringList DiskWriter_unix::getDeviceNamesFromSysfs()
         }
 
         if (device.startsWith("mmcblk") || device.startsWith("sd")) {
-            names << device;
+            QProcess* process = new QProcess();
+            process->start("fdisk -l");
+            process->waitForFinished();
+            QString output =  process->readAll();
+            if (output.contains(device)) {
+
+                names << device;
+            }
+
         }
     }
 
     return names;
 }
+
+#if defined(Q_OS_LINUX)
+quint64 DiskWriter_unix::driveSize(const QString& device) const
+{
+    blkid_probe pr;
+
+    pr = blkid_new_probe_from_filename(qPrintable(device));
+    if (!pr) {
+        return -1;
+    }
+
+    blkid_loff_t size = blkid_probe_get_size(pr);
+    blkid_free_probe(pr);
+    return size;
+}
+
+QStringList DiskWriter_unix::getPartitionsInfo(const QString& device) const
+{
+    blkid_probe pr;
+    blkid_partlist ls;
+    int nparts, i;
+    QStringList partList;
+
+    pr = blkid_new_probe_from_filename(qPrintable(device));
+    if (!pr) {
+        return partList;
+    }
+
+    ls = blkid_probe_get_partitions(pr);
+    if (ls == NULL) {
+        blkid_free_probe(pr);
+        return partList;
+    }
+
+    nparts = blkid_partlist_numof_partitions(ls);
+    if (nparts < 0) {
+        blkid_free_probe(pr);
+        return partList;
+    }
+
+    for (i = 0; i < nparts; i++) {
+         blkid_partition par = blkid_partlist_get_partition(ls, i);
+         QString partition;
+         QTextStream stream(&partition);
+         stream << "#" << blkid_partition_get_partno(par) << " - ";
+         stream << " " << blkid_partition_get_size(par)*512/(1024*1024.0) << "MB";
+
+         partList << partition;
+    }
+
+    blkid_free_probe(pr);
+    return partList;
+}
+#endif
