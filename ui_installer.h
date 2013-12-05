@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'installer.ui'
 **
-** Created by: Qt User Interface Compiler version 5.1.1
+** Created by: Qt User Interface Compiler version 5.2.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -35,12 +35,14 @@ public:
     {
         if (Installer->objectName().isEmpty())
             Installer->setObjectName(QStringLiteral("Installer"));
-        Installer->resize(307, 172);
+        Installer->resize(307, 182);
         QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(Installer->sizePolicy().hasHeightForWidth());
         Installer->setSizePolicy(sizePolicy);
+        Installer->setMinimumSize(QSize(307, 182));
+        Installer->setMaximumSize(QSize(307, 182));
         QFont font;
         font.setFamily(QStringLiteral("Calibri"));
         Installer->setFont(font);
@@ -93,7 +95,7 @@ public:
         cbSDcards->setFont(font3);
         labelVersion = new QLabel(Installer);
         labelVersion->setObjectName(QStringLiteral("labelVersion"));
-        labelVersion->setGeometry(QRect(240, 0, 81, 19));
+        labelVersion->setGeometry(QRect(220, 0, 81, 19));
         QFont font4;
         font4.setFamily(QStringLiteral("Geeza Pro"));
         font4.setPointSize(10);
