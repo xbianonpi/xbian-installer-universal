@@ -202,6 +202,7 @@ QStringList DiskWriter_unix::getUserFriendlyNamesRemovableDevices(QStringList de
 
 bool DiskWriter_unix::checkIfUSB(QString device) {
 #ifdef Q_OS_LINUX
+    if(device.indexOf("mmcblk")==0) return true;
     QProcess lssize;
     lssize.start(QString("cat /sys/block/%1/removable").arg(device), QIODevice::ReadOnly);
     lssize.waitForStarted();
