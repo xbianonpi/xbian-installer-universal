@@ -5,6 +5,7 @@
 int main(int argc, char *argv[])
 {
 
+    QApplication a(argc, argv);
 #if defined(Q_OS_LINUX)
     // Check if this program is executed as root
     QProcess lsblk;
@@ -21,7 +22,6 @@ int main(int argc, char *argv[])
     }
 #endif
 
-    QApplication a(argc, argv);
     Installer w;
     w.setWindowTitle("XBian installer (version 1.0)");
     w.show();
