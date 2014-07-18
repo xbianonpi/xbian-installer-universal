@@ -5,9 +5,12 @@
 #include <QtXml>
 #include <QNetworkAccessManager>
 #include <QList>
-#include "version.h"
 #include <QXmlStreamReader>
 
+#include "version.h"
+
+// Mirror information
+#define sourceForgeRSS "http://sourceforge.net/projects/xbian/rss?path=/release"
 
 class DiskWriter;
 
