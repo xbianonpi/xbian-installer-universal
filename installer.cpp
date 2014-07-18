@@ -1,6 +1,3 @@
-#include "installer.h"
-#include "ui_installer.h"
-
 #include <QString>
 #include <QFile>
 #include <QFileDialog>
@@ -10,6 +7,9 @@
 #include <QNetworkRequest>
 #include <QMessageBox>
 
+#include "installer.h"
+#include "ui_installer.h"
+
 #if defined(Q_OS_WIN)
 #include "diskwriter_windows.h"
 #elif defined(Q_OS_UNIX)
@@ -18,10 +18,7 @@
 
 // TODO: Get chunk size from server, or whatever
 #define CHUNKSIZE 1*1024*1024
-#define installerVersion 0.2
-
-// Mirror information
-#define sourceForgeRSS "http://sourceforge.net/api/file/index/project-id/1428221/atom"
+#define installerVersion 0.2.1
 
 Installer::Installer(QWidget *parent) :
     QDialog(parent),
@@ -524,17 +521,17 @@ QList<version> Installer::parseXML(QXmlStreamReader& xml) {
         /* If token is StartElement, we'll see if we can read it.*/
         if(token == QXmlStreamReader::StartElement) {
             /* If it's named persons, we'll go to the next.*/
-            if(xml.name() == "feed") {
+            if(xml.name() == "rss") {
                continue;
             }
 
             /* If it's named person, we'll dig the information from there.*/
-            if(xml.name() == "entry") {
+            if(xml.name() == "item") {
                 version v = this->parseVersion(xml);
                 if (v.downloadLink != "") {
                     vers.append(v);
+                }
             }
-        }
         }
     }
 
@@ -546,36 +543,28 @@ version Installer::parseVersion (QXmlStreamReader& xml) {
      QString downloadLink;
      QString md5;
 
-
-     while(!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "entry")) {
+     while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "item")) {
          xml.readNext();
-         if(xml.tokenType() == QXmlStreamReader::StartElement) {
+
+         if (xml.tokenType() == QXmlStreamReader::StartElement) {
             if(xml.name() == "link") {
-                QXmlStreamAttributes atr = xml.attributes();
+                xml.readNext();
+                downloadLink = xml.text().toString();
 
-                if (atr.hasAttribute("href")) {
-                    downloadLink = atr.value("href").toString();
-                    if (!downloadLink.contains("release") || !downloadLink.contains(".img.gz")) {
+                if (!downloadLink.contains(".img.gz"))
                         downloadLink = "";
-                    }
-                }
-             }
-
-
-            if (xml.name() == "hash") {
+            } else if (xml.name() == "hash" && xml.attributes().value("algo").toString() == "md5") {
                 xml.readNext();
                 md5 = xml.text().toString();
             }
-        }
-    }
-
-
+         }
+     }
 
      if (downloadLink != "" && md5 != "") {
         version v(downloadLink, md5);
         return v;
      }
 
-      version v("","");
+      version v("", "");
       return v;
 }
