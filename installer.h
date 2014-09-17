@@ -31,6 +31,7 @@ private:
 
     QXmlSimpleReader xmlReader;
     QNetworkAccessManager manager;
+    QUrl sourceForgeRSSUrl;
 
     void parseAndSetLinks(const QByteArray &data);
     void saveAndUpdateProgress(QNetworkReply *reply);
@@ -51,10 +52,11 @@ private:
         RESPONSE_FOUND = 302,
         RESPONSE_REDIRECT = 307,
         RESPONSE_BAD_REQUEST = 400,
-        RESPONSE_NOT_FOUND = 404
+        RESPONSE_NOT_FOUND = 404,
+        RESPONSE_MOVED_PERMANENTLY = 301
     };
     enum {
-        STATE_IDLE,
+        STATE_IDLE = 0,
         STATE_GETTING_LINKS,
         STATE_GETTING_URL,
         STATE_DOWNLOADING_IMAGE,
