@@ -56,6 +56,7 @@ Installer::Installer(QWidget *parent) :
     timer->start(1000);
 
     isCancelled = false;
+    sourceForgeRSSUrl = QUrl(sourceForgeRSS);
 
     setImageFileName("");
     updateLinks();
@@ -273,8 +274,7 @@ void Installer::updateLinks()
     state = STATE_GETTING_LINKS;
     this->updateUI();
 
-    QUrl url(sourceForgeRSS);
-    QNetworkRequest req = QNetworkRequest(url);
+    QNetworkRequest req = QNetworkRequest(sourceForgeRSSUrl);
     req.setAttribute(QNetworkRequest::HttpPipeliningAllowedAttribute, true);
     req.setRawHeader("User-Agent", "Wget/1.14 (linux-gnu)");
     manager.get(req);
@@ -333,12 +333,20 @@ void Installer::fileListReply(QNetworkReply *reply)
 
         switch (state) {
         case STATE_GETTING_LINKS:
-            if (responseCode == RESPONSE_OK && reply->isReadable()) {
+            switch(responseCode) {
+            case RESPONSE_MOVED_PERMANENTLY:
+            case RESPONSE_REDIRECT:
+                sourceForgeRSSUrl = redirectionUrl;
+                updateLinks();
+                break;
+            case RESPONSE_OK:
                 parseAndSetLinks(reply->readAll());
+            default:
+                this->state = STATE_IDLE;
+                this->updateUI();
+                reset();
+                break;
             }
-            this->state = STATE_IDLE;
-            this->updateUI();
-            reset();
             break;
         case STATE_GETTING_URL:
             this->updateUI();
