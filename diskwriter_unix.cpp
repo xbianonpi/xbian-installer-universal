@@ -37,6 +37,11 @@ int DiskWriter_unix::open(QString device)
     unmount.start("diskutil unmountDisk "+device, QIODevice::ReadOnly);
     unmount.waitForStarted();
     unmount.waitForFinished();
+#elif defined(Q_OS_LINUX)
+    QProcess unmount;
+    unmount.start("umount "+device, QIODevice::ReadOnly);
+    unmount.waitForStarted();
+    unmount.waitForFinished();
 #endif
 
     if (!dev.open(QFile::WriteOnly)) {
