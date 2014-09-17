@@ -7,11 +7,7 @@
 #include <QProcess>
 #include <QTextStream>
 
-#if defined(Q_OS_LINUX)
-#include "QtZlib/zlib.h"
-#else
 #include "zlib.h"
-#endif
 
 DiskWriter_unix::DiskWriter_unix(QObject *parent) :
     DiskWriter(parent)

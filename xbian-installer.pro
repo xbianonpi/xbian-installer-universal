@@ -25,15 +25,14 @@ win32 {
 }
 unix {
     SOURCES += diskwriter_unix.cpp
-    HEADERS += diskwriter_unix.h \
-        zlib.h \
-        zconf.h
-}
-
-macx {
+    HEADERS += diskwriter_unix.h
     LIBS += -lz
 }
 
+macx {
+    HEADERS += zlib.h \
+        zconf.h
+}
 
 FORMS    += installer.ui
 
