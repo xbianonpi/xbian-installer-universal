@@ -104,7 +104,7 @@ void Installer::parseAndSetLinks(const QByteArray &data)
 
     bool ok = xmlReader.parse(source);
     if (!ok) {
-        std::cout << "Parsing failed." << std::endl;
+        qDebug() << "Parsing failed.";
     }
 
     QXmlStreamReader reader(data);
