@@ -276,6 +276,10 @@ QStringList DiskWriter_unix::getDeviceNamesFromSysfs()
     currentDir.setFilter(QDir::Dirs);
 
     QStringList entries = currentDir.entryList();
+    QProcess* process = new QProcess();
+    process->start("fdisk -l");
+    process->waitForFinished();
+    QString output =  process->readAll();
     foreach (QString device, entries) {
         // Skip "." and ".." dir entries
         if (device == "." || device == "..") {
@@ -283,15 +287,9 @@ QStringList DiskWriter_unix::getDeviceNamesFromSysfs()
         }
 
         if (device.startsWith("mmcblk") || device.startsWith("sd")) {
-            QProcess* process = new QProcess();
-            process->start("fdisk -l");
-            process->waitForFinished();
-            QString output =  process->readAll();
             if (output.contains(device)) {
-
                 names << device;
             }
-
         }
     }
 
