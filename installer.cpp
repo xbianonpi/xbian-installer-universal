@@ -257,16 +257,18 @@ unsigned int Installer::getUncompressedImageSize()
 
 void Installer::setImageFileName(QString filename)
 {
+    if(filename.isEmpty())
+        return;
     if (imageFile.isOpen()) {
         return;
     }
-    imageFileName = filename;
-    imageFile.setFileName(qApp->applicationDirPath() + imageFileName);
 
     int idx = filename.lastIndexOf('/');
     if (idx > 0) {
         filename.remove(0, idx+1);
     }
+    imageFileName = filename;
+    imageFile.setFileName(qApp->applicationDirPath() + "/" + imageFileName);
 }
 
 void Installer::updateLinks()
@@ -295,6 +297,7 @@ void Installer::downloadImage(QNetworkReply *reply)
     if (!imageFile.isOpen() && !imageFile.open(QFile::ReadWrite)) {
         return;
     }
+    imageFile.setPermissions(QFileDevice::Permission(0x0666)); // Set read/write on all so it can be removed without root access
 
     imageFile.write(reply->readAll());
     bytesDownloaded = contentLength;
