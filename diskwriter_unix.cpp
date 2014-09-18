@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QDir>
 #include <QProcess>
+#include <QRegularExpression>
 #include <QTextStream>
 
 #include "zlib.h"
@@ -38,10 +39,29 @@ int DiskWriter_unix::open(QString device)
     unmount.waitForStarted();
     unmount.waitForFinished();
 #elif defined(Q_OS_LINUX)
+    QProcess* ls = new QProcess();
+    ls->start("/bin/ls", QStringList() << "/dev" << "-m");
+    ls->waitForFinished();
+
+    QString output =  ls->readAll();
+    output = output.replace("\n"," ");
+
+    QStringList entries = output.split(", ");
+    QMutableStringListIterator lsi(entries);
+    while (lsi.hasNext())
+        lsi.next().prepend("/dev/");
+
+    QStringList partitions = entries.filter(QRegularExpression(device.append("*")));
+
     QProcess unmount;
-    unmount.start("umount "+device, QIODevice::ReadOnly);
+    unmount.start(QString("umount"), partitions , QIODevice::ReadOnly);
     unmount.waitForStarted();
-    unmount.waitForFinished();
+    if(!unmount.waitForFinished()) {
+        qDebug() << "Unmount failed:" << unmount.errorString();
+    }
+    unmount.waitForReadyRead();
+    qDebug() << "Unmount stdout:" << unmount.readAllStandardOutput();
+    qDebug() << "Unmount stderr:" << unmount.readAllStandardError();
 #endif
 
     if (!dev.open(QFile::WriteOnly)) {
