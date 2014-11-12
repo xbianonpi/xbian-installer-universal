@@ -234,7 +234,7 @@ unsigned int Installer::getUncompressedImageSize()
     unsigned char			bufSize[4];
     unsigned int			fileSize;
 
-    QString location = qApp->applicationDirPath() + imageFileName;
+    QString location = qApp->applicationDirPath() + "/" + imageFileName;
 
     file = fopen(location.toStdString().c_str(), "rb");
     if (file == NULL)
@@ -257,16 +257,18 @@ unsigned int Installer::getUncompressedImageSize()
 
 void Installer::setImageFileName(QString filename)
 {
+    if(filename.isEmpty())
+        return;
     if (imageFile.isOpen()) {
         return;
     }
-    imageFileName = filename;
-    imageFile.setFileName(qApp->applicationDirPath() + imageFileName);
 
     int idx = filename.lastIndexOf('/');
     if (idx > 0) {
         filename.remove(0, idx+1);
     }
+    imageFileName = filename;
+    imageFile.setFileName(qApp->applicationDirPath() + "/" + imageFileName);
 }
 
 void Installer::updateLinks()
@@ -295,6 +297,7 @@ void Installer::downloadImage(QNetworkReply *reply)
     if (!imageFile.isOpen() && !imageFile.open(QFile::ReadWrite)) {
         return;
     }
+    imageFile.setPermissions(QFileDevice::Permission(0x0666)); // Set read/write on all so it can be removed without root access
 
     imageFile.write(reply->readAll());
     bytesDownloaded = contentLength;
@@ -503,7 +506,7 @@ void Installer::writeImageToDevice()
     }
 
 
-    if (!diskWriter->writeCompressedImageToRemovableDevice(qApp->applicationDirPath() + ver.fileName)) {
+    if (!diskWriter->writeCompressedImageToRemovableDevice(qApp->applicationDirPath() + "/" + ver.fileName)) {
         reset();
         return;
     }
