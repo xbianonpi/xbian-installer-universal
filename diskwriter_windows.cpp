@@ -1,6 +1,6 @@
 #include "diskwriter_windows.h"
 
-#include <QtZlib/zlib.h>
+#include <zlib.h>
 #include <QApplication>
 #include <QMessageBox>
 

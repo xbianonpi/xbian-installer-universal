@@ -112,7 +112,7 @@ void Installer::parseAndSetLinks(const QByteArray &data)
 
 
     ui->cbVersion->clear();
-    for(int k = 0; k < (versions.size()/2); k++) versions.swap(k,versions.size()-(1+k));
+//    for(int k = 0; k < (versions.size()/2); k++) versions.swap(k,versions.size()-(1+k));
 
     foreach (version v, versions) {
         ui->cbVersion->addItem(v.name);
@@ -509,7 +509,7 @@ void Installer::writeImageToDevice()
     }
 
     if (!isCancelled) {
-        QString message = "XBian has been succesfully installed on your SD card, you can now plug your SD card into your Raspberry Pi";
+        QString message = "XBian has been succesfully installed on your SD card, you can now plug your SD card into your Raspberry Pi, CuBox-i or Hummingboard";
         QMessageBox::warning(this, tr("Installation succesfull!"), message,QMessageBox::Ok);
         this->state = this->STATE_IDLE;
         this->updateUI();
