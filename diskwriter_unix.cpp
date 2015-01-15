@@ -44,17 +44,30 @@ int DiskWriter_unix::open(QString device)
     ls->waitForFinished();
 
     QString output =  ls->readAll();
+
+    // *** this variable
     output = output.replace("\n"," ");
 
+    // *** LIST OD ENTRIES TO UNMOUNT:
     QStringList entries = output.split(", ");
     QMutableStringListIterator lsi(entries);
     while (lsi.hasNext())
         lsi.next().prepend("/dev/");
 
+    // *** QStringList partitions = entries.filter(QRegularExpression(device.append("*")));
+
+    // *** this variable
     QStringList partitions = entries.filter(QRegularExpression(device.append("*")));
 
+
     QProcess unmount;
+
+    // *** partitions change to only one//sd
+    // partions place in function is qstring&
+    //unmount.start(QString("umount"), partitions , QIODevice::ReadOnly);
+
     unmount.start(QString("umount"), partitions , QIODevice::ReadOnly);
+
     unmount.waitForStarted();
     if(!unmount.waitForFinished()) {
         qDebug() << "Unmount failed:" << unmount.errorString();
