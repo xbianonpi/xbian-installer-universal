@@ -4,7 +4,12 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml network widgets
+#This was replaced because it can generate some compiling errors:
+#QT       += core gui xml network widgets
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += core gui xml network #widgets
+
 
 TARGET = XBian-installer
 TEMPLATE = app
