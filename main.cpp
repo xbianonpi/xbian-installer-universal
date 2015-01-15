@@ -1,4 +1,5 @@
 #include "installer.h"
+#include "dialog.h"
 #include <QApplication>
 #include <QMessageBox>
 
@@ -22,8 +23,17 @@ int main(int argc, char *argv[])
     }
 #endif
 
-    Installer w;
-    w.setWindowTitle("XBian installer (version 1.0)");
-    w.show();
+    // ***
+
+    Dialog first_menu;
+    //aa.setWindowTitle("XBian installer (version 1.1)");
+    first_menu.show();
+
+    //Installer w;
+    //w.setWindowTitle("XBian installer (version 1.0)");
+    //w.show();
+
+    // ***
+
     return a.exec();
 }
