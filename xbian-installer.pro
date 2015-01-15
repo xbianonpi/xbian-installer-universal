@@ -8,7 +8,7 @@
 #QT       += core gui xml network widgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-QT       += core gui xml network #widgets
+QT       += core gui xml network
 
 
 TARGET = XBian-installer
@@ -16,11 +16,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     installer.cpp \
-    version.cpp
+    version.cpp \
+    dialog.cpp
 
 HEADERS  += installer.h \
     diskwriter.h \
-    version.h
+    version.h \
+    dialog.h
 
 win32 {
     SOURCES += diskwriter_windows.cpp
@@ -39,7 +41,8 @@ macx {
         zconf.h
 }
 
-FORMS    += installer.ui
+FORMS    += installer.ui \
+    dialog.ui
 
 OTHER_FILES += \
     app.rc
