@@ -9,6 +9,9 @@
 
 #include "installer.h"
 #include "ui_installer.h"
+#include "dialog.h"
+#include <iostream>
+
 
 #if defined(Q_OS_WIN)
 #include "diskwriter_windows.h"
@@ -27,6 +30,23 @@ Installer::Installer(QWidget *parent) :
     bytesDownloaded(0)
 {
     ui->setupUi(this);
+    novafuncao();
+
+}
+
+Installer::~Installer()
+{
+    delete ui;
+}
+
+
+// ***
+
+void Installer::novafuncao()
+{
+
+
+
     manager.setParent(this);
 
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -56,19 +76,32 @@ Installer::Installer(QWidget *parent) :
     timer->start(1000);
 
     isCancelled = false;
-    sourceForgeRSSUrl = QUrl(sourceForgeRSS);
+
+    // *** sourceForgeRSSUrl = QUrl(sourceForgeRSS);
+    sourceForgeURL b;
+    sourceForgeRSSUrl = b.getVal();
+
+/*
+    if(sourceForgeRSS==0)
+    {
+        sourceForgeRSSUrl = QUrl(sourceForgeRSS_release);
+    }
+    else
+    {
+        sourceForgeRSSUrl = QUrl(sourceForgeRSS_testing);
+    } */
+    // ***
 
     setImageFileName("");
     updateLinks();
 
-    ui->labelVersion->setText("Version 1.0");
+    ui->labelVersion->setText("Version 1.1");
 
 }
 
-Installer::~Installer()
-{
-    delete ui;
-}
+// ***
+
+
 
 void Installer::refreshDeviceList()
 {
@@ -234,7 +267,8 @@ unsigned int Installer::getUncompressedImageSize()
     unsigned char			bufSize[4];
     unsigned int			fileSize;
 
-    QString location = qApp->applicationDirPath() + imageFileName;
+    // *** QString location = qApp->applicationDirPath() + imageFileName;
+    QString location = qApp->applicationDirPath() +'/'+ imageFileName;
 
     file = fopen(location.toStdString().c_str(), "rb");
     if (file == NULL)
@@ -261,7 +295,8 @@ void Installer::setImageFileName(QString filename)
         return;
     }
     imageFileName = filename;
-    imageFile.setFileName(qApp->applicationDirPath() + imageFileName);
+    // *** imageFile.setFileName(qApp->applicationDirPath() + imageFileName);
+    imageFile.setFileName(qApp->applicationDirPath() +'/'+ imageFileName);
 
     int idx = filename.lastIndexOf('/');
     if (idx > 0) {
@@ -503,7 +538,8 @@ void Installer::writeImageToDevice()
     }
 
 
-    if (!diskWriter->writeCompressedImageToRemovableDevice(qApp->applicationDirPath() + ver.fileName)) {
+    // *** if (!diskWriter->writeCompressedImageToRemovableDevice(qApp->applicationDirPath() + ver.fileName)) {
+    if (!diskWriter->writeCompressedImageToRemovableDevice(qApp->applicationDirPath() +'/'+ ver.fileName)) {
         reset();
         return;
     }
