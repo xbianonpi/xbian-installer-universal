@@ -30,7 +30,8 @@
   </property>
   <property name="font">
    <font>
-    <family>Calibri</family>
+    <family>Verdana</family>
+    <pointsize>10</pointsize>
    </font>
   </property>
   <property name="contextMenuPolicy">
@@ -174,7 +175,7 @@
     </font>
    </property>
    <property name="text">
-    <string>Version 1.0</string>
+    <string>Version 1.1</string>
    </property>
   </widget>
  </widget>
