@@ -8,9 +8,12 @@
 #include <QXmlStreamReader>
 
 #include "version.h"
-
+#include "dialog.h"
 // Mirror information
-#define sourceForgeRSS "http://sourceforge.net/projects/xbian/rss?path=/release"
+
+// *** #define sourceForgeRSS "http://sourceforge.net/projects/xbian/rss?path=/release"
+
+// ***
 
 class DiskWriter;
 
@@ -25,13 +28,15 @@ class Installer : public QDialog
 public:
     explicit Installer(QWidget *parent = 0);
     ~Installer();
-    
+    QUrl source;
 private:
     Ui::Installer *ui;
 
     QXmlSimpleReader xmlReader;
     QNetworkAccessManager manager;
     QUrl sourceForgeRSSUrl;
+
+    void novafuncao();
 
     void parseAndSetLinks(const QByteArray &data);
     void saveAndUpdateProgress(QNetworkReply *reply);
