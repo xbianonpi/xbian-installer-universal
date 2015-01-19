@@ -160,7 +160,7 @@
     </font>
    </property>
    <property name="text">
-    <string>CuBox | HummingBoard</string>
+    <string>CuBox-i and HummingBoard</string>
    </property>
   </widget>
   <widget class="QRadioButton" name="radioButton">
