@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/icons">
-        <file>getrasplex.png</file>
-        <file>logo.png</file>
-    </qresource>
-</RCC>

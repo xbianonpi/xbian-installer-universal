@@ -23,17 +23,7 @@ int main(int argc, char *argv[])
     }
 #endif
 
-    // ***
-
-    Dialog first_menu;
-    //aa.setWindowTitle("XBian installer (version 1.1)");
-    first_menu.show();
-
-    //Installer w;
-    //w.setWindowTitle("XBian installer (version 1.0)");
-    //w.show();
-
-    // ***
-
-    return a.exec();
+    Dialog devices_window;
+    devices_window.show();
+    return devices_window.exec();
 }

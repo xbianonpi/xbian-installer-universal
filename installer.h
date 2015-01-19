@@ -9,11 +9,9 @@
 
 #include "version.h"
 #include "dialog.h"
-// Mirror information
 
-// *** #define sourceForgeRSS "http://sourceforge.net/projects/xbian/rss?path=/release"
-
-// ***
+// Sourceforge location
+#define sourceForgeRSS "http://sourceforge.net/projects/xbian/rss?path=/release"
 
 class DiskWriter;
 
@@ -36,8 +34,7 @@ private:
     QNetworkAccessManager manager;
     QUrl sourceForgeRSSUrl;
 
-    void novafuncao();
-
+    void installer_main();
     void parseAndSetLinks(const QByteArray &data);
     void saveAndUpdateProgress(QNetworkReply *reply);
     void extractByteOffsetsFromContentLength(qlonglong &first, qlonglong &last, qlonglong &total, QString s);

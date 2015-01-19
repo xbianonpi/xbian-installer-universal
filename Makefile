@@ -564,7 +564,6 @@ moc_installer.cpp: /usr/include/qt5/QtWidgets/QDialog \
 		/usr/include/qt5/QtCore/QString \
 		/usr/include/qt5/QtCore/QFile \
 		dialog.h \
-		/usr/include/qt5/QtCore/QUrl \
 		installer.h
 	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/x86_64-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include installer.h -o moc_installer.cpp
 
@@ -745,7 +744,6 @@ moc_dialog.cpp: /usr/include/qt5/QtWidgets/QDialog \
 		/usr/include/qt5/QtCore/qfiledevice.h \
 		/usr/include/qt5/QtGui/qvector2d.h \
 		/usr/include/qt5/QtGui/qtouchdevice.h \
-		/usr/include/qt5/QtCore/QUrl \
 		dialog.h
 	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) $(INCPATH) -I/usr/include/c++/4.8 -I/usr/include/x86_64-linux-gnu/c++/4.8 -I/usr/include/c++/4.8/backward -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include dialog.h -o moc_dialog.cpp
 
@@ -1084,7 +1082,6 @@ main.o: main.cpp installer.h \
 		/usr/include/qt5/QtCore/QString \
 		/usr/include/qt5/QtCore/QFile \
 		dialog.h \
-		/usr/include/qt5/QtCore/QUrl \
 		/usr/include/qt5/QtWidgets/QApplication \
 		/usr/include/qt5/QtWidgets/qapplication.h \
 		/usr/include/qt5/QtWidgets/qdesktopwidget.h \
@@ -1563,7 +1560,6 @@ dialog.o: dialog.cpp dialog.h \
 		/usr/include/qt5/QtCore/qfiledevice.h \
 		/usr/include/qt5/QtGui/qvector2d.h \
 		/usr/include/qt5/QtGui/qtouchdevice.h \
-		/usr/include/qt5/QtCore/QUrl \
 		ui_dialog.h \
 		/usr/include/qt5/QtCore/QVariant \
 		/usr/include/qt5/QtWidgets/QAction \
@@ -1579,11 +1575,6 @@ dialog.o: dialog.cpp dialog.h \
 		/usr/include/qt5/QtGui/qinputmethod.h \
 		/usr/include/qt5/QtWidgets/QButtonGroup \
 		/usr/include/qt5/QtWidgets/qbuttongroup.h \
-		/usr/include/qt5/QtWidgets/QHBoxLayout \
-		/usr/include/qt5/QtWidgets/qboxlayout.h \
-		/usr/include/qt5/QtWidgets/qlayout.h \
-		/usr/include/qt5/QtWidgets/qlayoutitem.h \
-		/usr/include/qt5/QtWidgets/qgridlayout.h \
 		/usr/include/qt5/QtWidgets/QHeaderView \
 		/usr/include/qt5/QtWidgets/qheaderview.h \
 		/usr/include/qt5/QtWidgets/qabstractitemview.h \
@@ -1609,7 +1600,6 @@ dialog.o: dialog.cpp dialog.h \
 		/usr/include/qt5/QtWidgets/qabstractbutton.h \
 		/usr/include/qt5/QtWidgets/QRadioButton \
 		/usr/include/qt5/QtWidgets/qradiobutton.h \
-		/usr/include/qt5/QtWidgets/QWidget \
 		installer.h \
 		/usr/include/qt5/QtXml/QtXml \
 		/usr/include/qt5/QtXml/QtXmlDepends \
@@ -1894,3 +1884,4 @@ install:   FORCE
 uninstall:   FORCE
 
 FORCE:
+

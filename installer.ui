@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>307</width>
-    <height>182</height>
+    <width>300</width>
+    <height>180</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,14 +18,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>307</width>
-    <height>182</height>
+    <width>300</width>
+    <height>180</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>307</width>
-    <height>182</height>
+    <width>300</width>
+    <height>180</height>
    </size>
   </property>
   <property name="font">
@@ -83,7 +83,7 @@
     </font>
    </property>
    <property name="text">
-    <string>1. Select version</string>
+    <string>2. Select version:</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btInstall">
@@ -140,7 +140,7 @@
     </font>
    </property>
    <property name="text">
-    <string>2. Select SD card</string>
+    <string>3. Select SD card:</string>
    </property>
   </widget>
   <widget class="QComboBox" name="cbSDcards">
@@ -175,7 +175,7 @@
     </font>
    </property>
    <property name="text">
-    <string>Version 1.1</string>
+    <string>Version 1.2</string>
    </property>
   </widget>
  </widget>

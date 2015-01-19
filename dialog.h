@@ -3,25 +3,21 @@
 
 #include <QDialog>
 
-// ***
-#include <QUrl>
-// ***
+#define installer_version "Version 1.2"
 
-class sourceForgeURL
+
+class rpi_or_cubox_class
 {
-static QUrl sourceForgeURLtype;
+static QString rpi_or_cubox;
 public:
-void setVal(const QUrl& sFurl) {
-        sourceForgeURLtype = sFurl;
+void setVal(const QString& rpi_cubox) {
+        rpi_or_cubox = rpi_cubox;
     }
-QUrl getVal() const {
-return sourceForgeURLtype;
+QString getVal() const {
+return rpi_or_cubox;
 }
 };
 
-#define sourceForgeRSS_release "http://sourceforge.net/projects/xbian/rss?path=/release"
-#define sourceForgeRSS_testing "http://sourceforge.net/projects/xbian/rss?path=/testing"
-// ***
 
 namespace Ui {
 class Dialog;

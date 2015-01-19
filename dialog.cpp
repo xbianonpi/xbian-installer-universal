@@ -1,16 +1,12 @@
-// ***
-
 #include "dialog.h"
 #include "ui_dialog.h"
 #include "installer.h"
-#include <QUrl>
-#include <iostream>
 
-QUrl sourceForgeRSS(sourceForgeRSS_release);
-//sourceForgeRSSUrl=sourceForgeRSS_release;
-QUrl sourceForgeURL::sourceForgeURLtype = sourceForgeRSS;
 
-sourceForgeURL sourceForgeOption;
+// Init of the class variable rpi_or_cubox
+QString rpi_or_cubox_class::rpi_or_cubox="rpi";
+rpi_or_cubox_class rpi_or_cubox_option;
+
 
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
@@ -18,8 +14,9 @@ Dialog::Dialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-
+    ui->labelVersion->setText(installer_version);
 }
+
 
 Dialog::~Dialog()
 {
@@ -32,16 +29,14 @@ void Dialog::on_pushButton_clicked()
 
     if(!ui->radioButton->isChecked())
     {
-        sourceForgeRSS=sourceForgeRSS_testing;
-        sourceForgeOption.setVal(sourceForgeRSS);
+        rpi_or_cubox_option.setVal("imx6");
     }
 
     this->close();
 
-    Installer w;
-    //w.setWindowTitle("XBian installer (version 1.1)");
-    w.show();
-    w.exec();
+    Installer installer_window;
+    installer_window.show();
+    installer_window.exec();
 }
 
 void Dialog::on_pushButton_2_clicked()

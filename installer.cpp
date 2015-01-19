@@ -10,7 +10,6 @@
 #include "installer.h"
 #include "ui_installer.h"
 #include "dialog.h"
-#include <iostream>
 
 
 #if defined(Q_OS_WIN)
@@ -30,8 +29,11 @@ Installer::Installer(QWidget *parent) :
     bytesDownloaded(0)
 {
     ui->setupUi(this);
-    novafuncao();
+    ui->labelVersion->setText(installer_version);
+    //QIcon icon(":/logo/icon.ico");
+    //this->setWindowIcon(icon);
 
+    installer_main();
 }
 
 Installer::~Installer()
@@ -40,19 +42,11 @@ Installer::~Installer()
 }
 
 
-// ***
-
-void Installer::novafuncao()
+void Installer::installer_main()
 {
-
-
-
     manager.setParent(this);
 
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
-
-    QIcon icon(":/logo/icon.ico");
-    this->setWindowIcon(icon);
 
 #if defined(Q_OS_WIN)
     diskWriter = new DiskWriter_windows(this);
@@ -77,30 +71,11 @@ void Installer::novafuncao()
 
     isCancelled = false;
 
-    // *** sourceForgeRSSUrl = QUrl(sourceForgeRSS);
-    sourceForgeURL b;
-    sourceForgeRSSUrl = b.getVal();
-
-/*
-    if(sourceForgeRSS==0)
-    {
-        sourceForgeRSSUrl = QUrl(sourceForgeRSS_release);
-    }
-    else
-    {
-        sourceForgeRSSUrl = QUrl(sourceForgeRSS_testing);
-    } */
-    // ***
+    sourceForgeRSSUrl = QUrl (sourceForgeRSS);
 
     setImageFileName("");
     updateLinks();
-
-    ui->labelVersion->setText("Version 1.1");
-
 }
-
-// ***
-
 
 
 void Installer::refreshDeviceList()
@@ -113,6 +88,7 @@ void Installer::refreshDeviceList()
         ui->cbSDcards->setCurrentIndex(ui->cbSDcards->count()-1);
     }
 }
+
 
 void Installer::cancel()
 {
@@ -295,7 +271,7 @@ void Installer::setImageFileName(QString filename)
         return;
     }
     imageFileName = filename;
-    // *** imageFile.setFileName(qApp->applicationDirPath() + imageFileName);
+
     imageFile.setFileName(qApp->applicationDirPath() +'/'+ imageFileName);
 
     int idx = filename.lastIndexOf('/');
@@ -595,9 +571,13 @@ version Installer::parseVersion (QXmlStreamReader& xml) {
                 xml.readNext();
                 downloadLink = xml.text().toString();
 
-                if (!downloadLink.contains(".img.gz"))
+                // will only show the links with ".img.gz" and ("rpi" or "imx6") on the name
+                rpi_or_cubox_class getrpi_or_cubox;
+
+                if (!downloadLink.contains(".img.gz") || !downloadLink.contains(getrpi_or_cubox.getVal()))
                         downloadLink = "";
-            } else if (xml.name() == "hash" && xml.attributes().value("algo").toString() == "md5") {
+            }
+            else if (xml.name() == "hash" && xml.attributes().value("algo").toString() == "md5") {
                 xml.readNext();
                 md5 = xml.text().toString();
             }

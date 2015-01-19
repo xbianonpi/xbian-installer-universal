@@ -45,26 +45,23 @@ int DiskWriter_unix::open(QString device)
 
     QString output =  ls->readAll();
 
-    // *** this variable
     output = output.replace("\n"," ");
 
-    // *** LIST OD ENTRIES TO UNMOUNT:
     QStringList entries = output.split(", ");
     QMutableStringListIterator lsi(entries);
     while (lsi.hasNext())
         lsi.next().prepend("/dev/");
 
-    // *** QStringList partitions = entries.filter(QRegularExpression(device.append("*")));
 
-    // *** this variable
-    QStringList partitions = entries.filter(QRegularExpression(device.append("*")));
+    QStringList partitions = entries.filter(device);
 
+    // partitions.removeOne(device);
+    // ^removes the path to the device, because umount unmounts the filesystem,
+    // example, 'device' is "/dev/sdc", but the filesystems are "/dev/sdc1" or "/dev/sdc2"
+    // for 'device', umount will say "umount: /dev/sdc is not mounted (according to mtab)"
+    // not sure if remove works in all cases, so it's commented for now, and it will produce the previous comment
 
     QProcess unmount;
-
-    // *** partitions change to only one//sd
-    // partions place in function is qstring&
-    //unmount.start(QString("umount"), partitions , QIODevice::ReadOnly);
 
     unmount.start(QString("umount"), partitions , QIODevice::ReadOnly);
 
