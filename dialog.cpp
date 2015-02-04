@@ -27,10 +27,15 @@ Dialog::~Dialog()
 void Dialog::on_pushButton_clicked()
 {
 
-    if(!ui->radioButton->isChecked())
+    if(ui->radioButton_2->isChecked())
+    {
+        rpi_or_cubox_option.setVal("rpi2");
+    }
+    else if(ui->radioButton_3->isChecked())
     {
         rpi_or_cubox_option.setVal("imx6");
     }
+
 
     this->close();
 

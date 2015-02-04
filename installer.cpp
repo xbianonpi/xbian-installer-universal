@@ -571,11 +571,16 @@ version Installer::parseVersion (QXmlStreamReader& xml) {
                 xml.readNext();
                 downloadLink = xml.text().toString();
 
-                // will only show the links with ".img.gz" and ("rpi" or "imx6") on the name
+                // will only show the links with ".img.gz" and ("rpi", "rpi2" or "imx6") on the name
                 rpi_or_cubox_class getrpi_or_cubox;
 
+
                 if (!downloadLink.contains(".img.gz") || !downloadLink.contains(getrpi_or_cubox.getVal()))
-                        downloadLink = "";
+                    downloadLink = "";
+
+                if(getrpi_or_cubox.getVal()=="rpi" && downloadLink.contains("rpi2"))
+                   downloadLink = "";
+
             }
             else if (xml.name() == "hash" && xml.attributes().value("algo").toString() == "md5") {
                 xml.readNext();

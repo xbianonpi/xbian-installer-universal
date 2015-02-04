@@ -3,7 +3,7 @@ How to compile
 
 ##Linux
 ```
-sudo apt-get install libqt5widgets5 qt5-default qt5-qmake qtbase5-dev
+sudo apt-get install qt5-default qt5-qmake qtbase5-dev
 cd ~
 git clone --depth 5 https://github.com/xbianonpi/xbian-installer-universal.git
 cd xbian-installer-universal
