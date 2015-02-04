@@ -3,7 +3,7 @@ How to compile
 
 ##Linux
 ```
-sudo apt-get install qt5-default qt5-qmake qtbase5-dev
+sudo apt-get install qt5-default
 cd ~
 git clone --depth 5 https://github.com/xbianonpi/xbian-installer-universal.git
 cd xbian-installer-universal
@@ -33,3 +33,12 @@ make
 ```
 
 The final file is release/XBian-installer.exe
+
+
+
+How to run the installer in linux
+=================
+```
+chmod +x XBian-installer
+sudo ./XBian-installer
+```
