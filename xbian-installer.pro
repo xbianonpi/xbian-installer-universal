@@ -39,6 +39,7 @@ unix {
 macx {
     HEADERS += zlib.h \
         zconf.h
+    ICON = applet.icns
 }
 
 FORMS    += installer.ui \
