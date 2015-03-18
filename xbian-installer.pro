@@ -46,14 +46,12 @@ macx {
     # Name of the installer signing certificate
     INSTALLERCERT = "3rd Party Mac Developer Installer: <name/company>"
 
-    # Bundle identifier for your application
-    BUNDLEID = <com.company.YourApp>
+    BUNDLEID = xbian-Xbian-installer
 
-    # Name of the entitlements file
     ENTITLEMENTS = Entitlements.plist
 
-    # Path to Qt
-    QTPATH = ~/Qt/5.4/clang_64
+    # Path to Qt (edit to path)
+    QTPATH = /usr/local/Qt/5.4/clang_64
 
     # Frameworks Location
     FWLOC = $${QTPATH}/lib
@@ -66,17 +64,19 @@ macx {
     codesign.depends  += all
     codesign.commands += $${QTPATH}/bin/macdeployqt $${TARGET}.app -verbose=3;
 
-    # Copy plist files to correct locations for signing
-    # Add a line for each framework included in your app
     codesign.commands += cp $${FWLOC}/QtCore.framework/Contents/Info.plist $${TARGET}.app/Contents/Frameworks/QtCore.framework/Resources/Info.plist;
 
-    # Sign frameworks (change to suit your application)
-    # Add a line for each framework in application
+    # Sign plugins & Frameworks
     codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/QtCore.framework;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/QtWidgets.framework;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/QtGui.framework;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/DiskArbitration.framework;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/IOKit.framework;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/QTXml.framework;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/QTNetwork.framework;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/OpenGL.framework;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/AGL.framework;
 
-    # Sign plugins (change to suit your application)
-    # Add a line for each plugin in application
-    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/PlugIns/accessible/libqtaccessiblewidgets.dylib;
 
     # Sign the application bundle, using the provided entitlements
     codesign.commands += codesign -f -s \'$${APPCERT}\' -v --entitlements $${ENTITLEMENTS} $${TARGET}.app;
