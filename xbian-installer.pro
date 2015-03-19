@@ -40,20 +40,21 @@ macx {
     HEADERS += zlib.h \
         zconf.h
     ICON = applet.icns
-# Name of the application signing certificate
+    QMAKE_INFO_PLIST = info.plist
+    QMAKE_CFLAGS += -gdwarf-2
+    QMAKE_CXXFLAGS += -gdwarf-2
+
+    # Name of the application signing certificate
     APPCERT = "3rd Party Mac Developer Application: <name/company>"
 
     # Name of the installer signing certificate
     INSTALLERCERT = "3rd Party Mac Developer Installer: <name/company>"
 
-    BUNDLEID = xbian-Xbian-installer
-
-    ENTITLEMENTS = Entitlements.plist
+    BUNDLEID = org.xbian.installer
+    APPLET = applet
 
     # Path to Qt (edit to path)
     QTPATH = /usr/local/Qt/5.4/clang_64
-
-    # Frameworks Location
     FWLOC = $${QTPATH}/lib
 
     QMAKE_CFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
@@ -64,22 +65,28 @@ macx {
     codesign.depends  += all
     codesign.commands += $${QTPATH}/bin/macdeployqt $${TARGET}.app -verbose=3;
 
-    codesign.commands += cp $${FWLOC}/QtCore.framework/Contents/Info.plist $${TARGET}.app/Contents/Frameworks/QtCore.framework/Resources/Info.plist;
-
     # Sign plugins & Frameworks
     codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/QtCore.framework;
     codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/QtWidgets.framework;
     codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/QtGui.framework;
-    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/DiskArbitration.framework;
-    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/IOKit.framework;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/QtPrintSupport.framework;
     codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/QTXml.framework;
     codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/QTNetwork.framework;
-    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/OpenGL.framework;
-    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Frameworks/AGL.framework;
-
-
-    # Sign the application bundle, using the provided entitlements
-    codesign.commands += codesign -f -s \'$${APPCERT}\' -v --entitlements $${ENTITLEMENTS} $${TARGET}.app;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Plugins/bearer/libqcorewlanbearer.dylib;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Plugins/bearer/libqgenericbearer.dylib;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Plugins/imageformats/libqdds.dylib;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Plugins/imageformats/libqgif.dylib;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Plugins/imageformats/libqicns.dylib;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Plugins/imageformats/libqico.dylib;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Plugins/imageformats/libqjp2.dylib;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Plugins/imageformats/libqjpeg.dylib;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Plugins/imageformats/libqmng.dylib;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/PlugIns/imageformats/libqtga.dylib;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Plugins/imageformats/libqtiff.dylib;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Plugins/imageformats/libqwbmp.dylib;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Plugins/imageformats/libqwebp.dylib;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Plugins/platforms/libqcocoa.dylib;
+    codesign.commands += codesign -f -s \'$${APPCERT}\' -i $${BUNDLEID} $${TARGET}.app/Contents/Plugins/printsupport/libcocoaprintersupport.dylib;
 
     product.depends += all
 
