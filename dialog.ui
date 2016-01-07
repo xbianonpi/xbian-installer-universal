@@ -203,7 +203,7 @@
     </font>
    </property>
    <property name="text">
-    <string>Raspberry Pi</string>
+    <string>Raspberry Pi and Pi Zero</string>
    </property>
    <property name="checked">
     <bool>true</bool>

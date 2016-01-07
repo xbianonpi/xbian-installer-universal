@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
-    <height>180</height>
+    <width>340</width>
+    <height>220</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,14 +18,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>300</width>
-    <height>180</height>
+    <width>340</width>
+    <height>220</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>300</width>
-    <height>180</height>
+    <width>340</width>
+    <height>220</height>
    </size>
   </property>
   <property name="font">
@@ -62,8 +62,8 @@
   <widget class="QLabel" name="lbSelectVersion">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
+     <x>30</x>
+     <y>40</y>
      <width>171</width>
      <height>18</height>
     </rect>
@@ -89,15 +89,15 @@
   <widget class="QPushButton" name="btInstall">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>140</y>
-     <width>281</width>
-     <height>31</height>
+     <x>20</x>
+     <y>160</y>
+     <width>301</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>11</pointsize>
+     <family>Sans</family>
      <weight>75</weight>
      <bold>true</bold>
     </font>
@@ -109,8 +109,8 @@
   <widget class="QComboBox" name="cbVersion">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>30</y>
+     <x>30</x>
+     <y>60</y>
      <width>281</width>
      <height>20</height>
     </rect>
@@ -125,8 +125,8 @@
   <widget class="QLabel" name="lbSelectSD">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>70</y>
+     <x>30</x>
+     <y>100</y>
      <width>231</width>
      <height>18</height>
     </rect>
@@ -146,8 +146,8 @@
   <widget class="QComboBox" name="cbSDcards">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>90</y>
+     <x>30</x>
+     <y>120</y>
      <width>281</width>
      <height>20</height>
     </rect>
@@ -162,8 +162,8 @@
   <widget class="QLabel" name="labelVersion">
    <property name="geometry">
     <rect>
-     <x>220</x>
-     <y>0</y>
+     <x>240</x>
+     <y>10</y>
      <width>81</width>
      <height>19</height>
     </rect>
