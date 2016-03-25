@@ -3,7 +3,7 @@
 
 #include <QDialog>
 
-#define installer_version "Version 1.3"
+#define installer_version "Version 1.4"
 
 
 class rpi_or_cubox_class
