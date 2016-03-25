@@ -180,7 +180,7 @@
     </font>
    </property>
    <property name="text">
-    <string>Raspberry Pi 2</string>
+    <string>Raspberry Pi 2 and Pi 3</string>
    </property>
    <property name="checked">
     <bool>false</bool>

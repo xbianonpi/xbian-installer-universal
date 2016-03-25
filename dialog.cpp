@@ -29,7 +29,7 @@ void Dialog::on_pushButton_clicked()
 
     if(ui->radioButton_2->isChecked())
     {
-        rpi_or_cubox_option.setVal("rpi2");
+        rpi_or_cubox_option.setVal("rpi3");
     }
     else if(ui->radioButton_3->isChecked())
     {
